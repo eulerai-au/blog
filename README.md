@@ -1,2 +1,5 @@
 # blog
-To maintain the blog posts of Euler AI
+To maintain the blog posts of Euler AI.
+
+## Table of Contents
+
