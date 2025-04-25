@@ -2,22 +2,87 @@
 
 本报告对六种主流数据库系统进行了全面比较，涵盖数据类型灵活性、可扩展性、资源占用、并发性能、事务支持、查询能力、生态兼容性、接入友好度和许可协议等多个维度。这些数据库各具特色，适用于不同的应用场景，报告将帮助您根据具体需求做出最佳选择。
 
-## 当前数据库排名TOP-30以及开源情况
+**PostgreSQL**是综合场景下的最佳选择。
+
+## 当前[数据库排名](https://db-engines.com/en/ranking)TOP-30
 ![alt text](image.png)
 
-![alt text](image-1.png)
+## 各数据库开源情况对比
 
-![alt text](image-2.png)
+*表：开源情况对比*
+| 项目                |  Stars | Commits | Issues (Open) |  Forks | PR Creators | 主要语言 |
+| :------------------ | -----: | ------: | ------------: | -----: | ----------: | :------- |
+| postgres/postgres   | 18,201 |  45,250 |             0 |  4,880 |         135 | C        |
+| surrealdb/surrealdb | 29,160 |   8,988 |         2,856 |    982 |         182 | Rust     |
+| redis/redis         | 72,290 |  11,453 |         6,462 | 23,975 |       1,685 | C        |
+| mongodb/mongo       | 28,977 |  80,544 |             0 |  5,649 |         657 | C++      |
+| sqlite/sqlite       |  7,825 |   9,607 |             0 |  1,148 |          24 | C        |
+| tikv/tikv           | 16,224 |  18,818 |         5,323 |  2,176 |         510 | Rust     |
 
-![alt text](image-3.png)
+*表：最近28天情况*
+| 项目                | Stars (28天) | PRs Opened | PRs Merged | Issues Opened | Issues Closed | Commits (28天) |
+| :------------------ | -----------: | ---------: | ---------: | ------------: | ------------: | -------------: |
+| postgres/postgres   |          244 |          3 |          0 |             0 |             0 |            429 |
+| surrealdb/surrealdb |          201 |         56 |         39 |            36 |            19 |            296 |
+| redis/redis         |          370 |         45 |         24 |            22 |            16 |            209 |
+| mongodb/mongo       |          153 |          0 |          0 |             0 |             0 |          2,328 |
+| sqlite/sqlite       |          134 |          2 |          0 |             0 |             0 |             95 |
+| tikv/tikv           |           91 |         40 |         43 |            20 |            24 |             41 |
 
-![alt text](image-4.png)
 
-![alt text](image-5.png)
+基于以上两张表格的数据，这些数据库在开源情况上的横向对比可分为以下几个维度：
 
-![alt text](image-6.png)
+### 1. **社区活跃度**
+   - **Stars**: 
+     - Redis 拥有最多的 Stars (72,290)，显示了它在社区中的受欢迎程度。
+     - SurrealDB 紧随其后 (29,160)，尽管它是一个较新的项目，但吸引了很多关注。
+     - SQLite 最少 (7,825)，这可能与其作为嵌入式数据库的定位有关。
+   - **最近28天 Stars 增长**:
+     - Redis 依旧领先 (370)，而 Postgres (244) 和 SurrealDB (201) 也表现活跃。
+     - TiKV 增长最少 (91)，显示其社区增长较慢。
 
-**PostgreSQL**是综合场景下的最佳选择。
+### 2. **开发者参与度**
+   - **Commits**:
+     - MongoDB 的累计提交次数最多 (80,544)，反映了其开发强度和长期维护。
+     - 在最近28天，MongoDB 依然遥遥领先 (2,328)，展示了持续的开发投入。
+     - SQLite 的提交次数较少，可能因为其功能已较为稳定。
+   - **PR Creators**:
+     - Redis 的 PR 创作者最多 (1,685)，显示有大量的开发者参与贡献。
+     - SQLite 仅有24位 PR 创作者，参与人数最少。
+
+### 3. **问题和需求响应**
+   - **Issues (Open)**:
+     - Redis (6,462) 和 TiKV (5,323) 的未解决问题最多，表明它们的用户需求和反馈较多。
+     - SurrealDB 的开源项目中，也有相当多的未解决问题 (2,856)。
+     - Postgres、MongoDB 和 SQLite 标注的 Open Issues 为零，可能是因为这些项目在不同渠道（如邮件列表）管理问题。
+   - **最近28天 Issues**:
+     - SurrealDB 和 TiKV 都表现出较强的用户互动，分别新开了36和20个问题，同时解决了19和24个。
+     - Redis 也新开了22个问题并关闭了16个，显示出较好的响应能力。
+
+### 4. **代码贡献**
+   - **Forks**:
+     - Redis (23,975) 和 MongoDB (5,649) 的 Fork 数量领先，表明开发者对其代码的关注和再利用较多。
+     - SQLite 的 Fork 数量较少 (1,148)，这可能与其作为嵌入式数据库的性质有关。
+   - **PRs (Pull Requests)**:
+     - Redis 在累计和最近28天的 PR 表现都很突出，分别为1,685位贡献者和45个新 PR。
+     - TiKV 的最近28天合并 PR 数量最多 (43)，显示其开发迭代快速。
+     - Postgres 在最近28天没有合并 PR，可能是由于较高的合并门槛或维护策略。
+
+### 5. **主要语言**
+   - C语言主导了 Postgres、Redis 和 SQLite，表明它们对性能有很高的要求。
+   - Rust 语言的数据库（SurrealDB 和 TiKV）代表了现代开发趋势，注重安全性和并发性能。
+   - MongoDB 使用 C++，展现了对复杂功能和性能的平衡。
+
+---
+
+### 总结
+- **Redis**：在社区受欢迎度、开发者参与度和需求响应方面都表现突出，显示了其作为一个成熟、高效的内存数据库的价值。
+- **MongoDB**：提交量和贡献者数量遥遥领先，适合对复杂功能和稳定性要求较高的场景。
+- **SurrealDB**：尽管较新，但社区增长迅速，特别是在 Rust 生态中的受欢迎程度。
+- **Postgres**：经典数据库，Stars 和 Forks 数高，参与者可能更偏向于在邮件列表和社区讨论，而非 GitHub。
+- **SQLite**：轻量化、稳定的嵌入式数据库，社区参与较少，但也相对不需要高频次的维护。
+- **TiKV**：Rust 语言项目，最近开发活跃，适合对分布式存储和高性能需求的场景。
+
 
 ## 数据类型灵活性对比
 
@@ -281,7 +346,7 @@
 
 ### **4. 安装 MongoDB**
 
-1. **导入 MongoDB 的官方 GPG 密钥和源（Ubuntu 24.04）：**
+   **导入 MongoDB 的官方 GPG 密钥和源（Ubuntu 24.04）：**
    ```bash
    sudo apt-get install gnupg curl
    curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
@@ -290,7 +355,7 @@
    echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
    ```
 
-2. **安装 MongoDB：**
+   **安装 MongoDB：**
    ```bash
    sudo apt update
    sudo apt install -y mongodb-org
@@ -341,8 +406,8 @@
 
 实际参与测试的为SurrealDB, PostgreSQL, MongoDB。
 
-schema:
-            List of relations
+*保存得到的数据库：*
+
  | Schema | Name         | Type  | Owner    |
  | ------ | ------------ | ----- | -------- |
  | public | _edges       | table | postgres |
