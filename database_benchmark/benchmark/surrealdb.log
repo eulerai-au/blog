@@ -1,0 +1,21 @@
+
+ .d8888b.                                             888 8888888b.  888888b.
+d88P  Y88b                                            888 888  'Y88b 888  '88b
+Y88b.                                                 888 888    888 888  .88P
+ 'Y888b.   888  888 888d888 888d888  .d88b.   8888b.  888 888    888 8888888K.
+    'Y88b. 888  888 888P'   888P'   d8P  Y8b     '88b 888 888    888 888  'Y88b
+      '888 888  888 888     888     88888888 .d888888 888 888    888 888    888
+Y88b  d88P Y88b 888 888     888     Y8b.     888  888 888 888  .d88P 888   d88P
+ 'Y8888P'   'Y88888 888     888      'Y8888  'Y888888 888 8888888P'  8888888P'
+
+
+[2m2025-04-25T07:38:03.437292Z[0m [32m INFO[0m [2msurreal::env[0m[2m:[0m Running 2.2.2 for linux on x86_64
+[2m2025-04-25T07:38:03.437336Z[0m [32m INFO[0m [2msurrealdb::core::kvs::ds[0m[2m:[0m Starting kvs store in memory
+[2m2025-04-25T07:38:03.437418Z[0m [32m INFO[0m [2msurrealdb::core::kvs::ds[0m[2m:[0m Started kvs store in memory
+[2m2025-04-25T07:38:03.438106Z[0m [32m INFO[0m [2msurrealdb::core::kvs::ds[0m[2m:[0m Credentials were provided, and no root users were found. The root user 'root' will be created
+[2m2025-04-25T07:38:03.469388Z[0m [32m INFO[0m [2msurrealdb::net[0m[2m:[0m Listening for a system shutdown signal.
+[2m2025-04-25T07:38:03.469390Z[0m [32m INFO[0m [2msurrealdb::net[0m[2m:[0m Started web server on 127.0.0.1:8000
+[2m2025-04-25T07:38:12.327904Z[0m [33m WARN[0m [2msurrealdb::net[0m[2m:[0m SIGTERM received. Waiting for a graceful shutdown. A second signal will force an immediate shutdown.
+[2m2025-04-25T07:38:12.327934Z[0m [32m INFO[0m [2msurrealdb::net[0m[2m:[0m Listening for a system shutdown signal.
+[2m2025-04-25T07:38:12.328043Z[0m [32m INFO[0m [2msurrealdb::net[0m[2m:[0m Web server stopped. Bye!
+Goodbye!
