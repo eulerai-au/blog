@@ -2,10 +2,22 @@
 
 本报告对六种主流数据库系统进行了全面比较，涵盖数据类型灵活性、可扩展性、资源占用、并发性能、事务支持、查询能力、生态兼容性、接入友好度和许可协议等多个维度。这些数据库各具特色，适用于不同的应用场景，报告将帮助您根据具体需求做出最佳选择。
 
-## 当前数据库排名TOP-30
+## 当前数据库排名TOP-30以及开源情况
 ![alt text](image.png)
 
-根据当前的排名以及社区活跃度而言，**PostgreSQL**是综合场景下的最佳选择。
+![alt text](image-1.png)
+
+![alt text](image-2.png)
+
+![alt text](image-3.png)
+
+![alt text](image-4.png)
+
+![alt text](image-5.png)
+
+![alt text](image-6.png)
+
+**PostgreSQL**是综合场景下的最佳选择。
 
 ## 数据类型灵活性对比
 
