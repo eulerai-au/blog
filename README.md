@@ -8,5 +8,11 @@ To maintain the blog posts of Euler AI.
 
 - [2025/04/24] Free Computing Power + One-Click Remote Invocation! ModelScope MCP Marketplace Ushers in a New Era of AI Services. [EN](mcp/25_04_24/EN.md) / [Zh-CN](mcp/25_04_24/CN.md)
 
+### A2A
+- [2025/04/24] Unlocking a New Paradigm in Agent Collaboration: An In-Depth Look at Google's A2A Protocol. [EN](a2a/A2A_en.md) / [Zh-CN](a2a/A2A_cn.md)
+
 ### Database
 - [2025/04/25] Comprehensive Comparison Report of Modern Databases: PostgreSQL, SurrealDB, Redis, MongoDB, SQLite, and TiKV. [EN](database_benchmark/benchmark_report_en.md) / [Zh-CN](database_benchmark/benchmark_report_cn.md)
+
+### Database
+- [2025/04/29] Open-Source Document Parsing Tools Evaluation. [EN](doc-parser-benchmark/doc_parser_benchmark_en.md) / [Zh-CN](doc-parser-benchmark/doc_parser_benchmark_cn.md)
