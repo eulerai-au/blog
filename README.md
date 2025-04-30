@@ -14,5 +14,5 @@ To maintain the blog posts of Euler AI.
 ### Database
 - [2025/04/25] Comprehensive Comparison Report of Modern Databases: PostgreSQL, SurrealDB, Redis, MongoDB, SQLite, and TiKV. [EN](database_benchmark/benchmark_report_en.md) / [Zh-CN](database_benchmark/benchmark_report_cn.md)
 
-### Database
+### Document Parsing Tools
 - [2025/04/29] Open-Source Document Parsing Tools Evaluation. [EN](doc-parser-benchmark/doc_parser_benchmark_en.md) / [Zh-CN](doc-parser-benchmark/doc_parser_benchmark_cn.md)
