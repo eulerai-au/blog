@@ -274,30 +274,8 @@
 
 ---
 
-## License类型对比
 
-- **SurrealDB**：核心代码采用**Apache 2.0**，商业托管服务需付费（如Surreal Cloud的Start/Scale计划）。
-- **PostgreSQL**：**PostgreSQL License**（类似BSD/MIT），无商业限制。
-- **MongoDB**：社区版为**SSPL**（Server Side Public License），商业版需订阅。
-- **Redis**：核心代码**BSD 3-Clause**，Redis Modules部分功能需商业许可。
-- **SQLite**：**公有领域**（Public Domain），无使用限制。
-- **TiKV**：**Apache 2.0**，商业支持由PingCAP提供。
-
----
-
-## 综合推荐
-
-根据用户需求（多模数据、扩展性、向量存储等），推荐优先级如下：
-1. **PostgreSQL**：功能全面，扩展性强，适合需要稳定成熟方案的企业。
-2. **SurrealDB**：多模型与实时查询优势明显，适合创新项目。
-3. **MongoDB**：文档处理优秀，生态成熟。
-4. **TiKV**：超大规模分布式场景首选。
-5. **Redis**：适合缓存/会话等高频读写场景。
-6. **SQLite**：仅推荐嵌入式或小型应用。
-
-## 实践
-
-测试环境为ubuntu 24.04。部署方法都比较简单。
+## 部署方式
 
 ### **1. 安装 SurrealDB**
    ```bash
@@ -393,9 +371,24 @@
 
 ---
 
-### 目标数据兼容性分析
+## License类型对比
+
+- **SurrealDB**：核心代码采用**Apache 2.0**，商业托管服务需付费（如Surreal Cloud的Start/Scale计划）。
+- **PostgreSQL**：**PostgreSQL License**（类似BSD/MIT），无商业限制。
+- **MongoDB**：社区版为**SSPL**（Server Side Public License），商业版需订阅。
+- **Redis**：核心代码**BSD 3-Clause**，Redis Modules部分功能需商业许可。
+- **SQLite**：**公有领域**（Public Domain），无使用限制。
+- **TiKV**：**Apache 2.0**，商业支持由PingCAP提供。
+
+---
+
+## 实践
+
+测试环境为ubuntu 24.04。部署方法都比较简单。
 
 目标数据形式：每一个文件夹对应一篇论文，其中包含一个PDF论文原文和一组提取了文章相关信息的JSON文件。
+
+### 实际应用场景下的数据库选择
 
 - SurrealDB：支持JSON和结构化数据，适用于此数据集。
 - PostgreSQL：支持JSON和二进制数据，适用于此数据集。
@@ -404,7 +397,38 @@
 - SQLite：可以存储JSON和二进制数据，但缺乏嵌套结构的高级查询功能。
 - TiKV：键值存储，不适合JSON或复杂关系。
 
+进一步比较符合需求的SurrealDB, PostgreSQL, MongoDB：
+
+- SurrealDB倾向于使用标准的 Web 协议（HTTP 和 WebSocket），更适合实时应用和前后端直接通信。MongoDB和PostgreSQL支持相同的本地通信方式，但MongoDB默认使用TCP/IP通信。
+- MongoDB商业使用需要授权，PostgreSQL无商业限制。
+- 功能上两者都能满足需求。
+
+
+### 性能测试
+
+
 实际参与测试的为SurrealDB, PostgreSQL, MongoDB。
+
+
+<!-- Total write time for SurrealDB: 0.9940774440765381 seconds
+
+Total write time for MongoDB: 1.087291955947876 seconds
+
+Total write time for PostgreSQL: 0.09826374053955078 seconds
+
+Total read time for PostgreSQL: 0.005629062652587891 seconds
+
+Total read time for SurrealDB: 0.013937950134277344 seconds
+
+Total read time for MongoDB: 0.004241466522216797 seconds -->
+
+| Database       | Write Time (seconds) | Read Time (seconds) |
+|----------------|-----------------------|----------------------|
+| SurrealDB      | 0.9940774440765381    | 0.013937950134277344 |
+| MongoDB        | 1.087291955947876     | 0.004241466522216797 |
+| PostgreSQL     | 0.09826374053955078   | 0.005629062652587891 |
+
+
 
 *保存得到的数据库：*
 
@@ -417,14 +441,3 @@
  | public | experiment   | table | postgres |
  | public | paper        | table | postgres |
  | public | solution     | table | postgres |
-
-#### IO测试结果：
-
-Total write time for SurrealDB: 0.9940774440765381 seconds
-Total read time for SurrealDB: 0.013937950134277344 seconds
-
-Total write time for MongoDB: 1.087291955947876 seconds
-Total read time for MongoDB: 0.004241466522216797 seconds
-
-Total write time for PostgreSQL: 0.09826374053955078 seconds
-Total read time for PostgreSQL: 0.005629062652587891 seconds
