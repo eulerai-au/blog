@@ -57,77 +57,124 @@ Each of these document parsing tools has its unique features and is suited for d
 - Regarding deployment, using olmOCR requires a recent NVIDIA GPU with at least 20GB of memory (such as RTX 4090, L40S, A100, H100) and 30GB of disk space.
 - Regarding licensing, olmOCR is licensed under the Apache 2.0 License.
 
+
+### 1.6 Summary
+
+The following table provides a brief summary of the supported formats and licenses of the above document parsing tools:
+
+| Tool Name      | Supported Formats                                                                                      | License                                                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| **MinerU**     | PDF (`magic-pdf`); PPT, PPTX, DOC, DOCX, PDF (`magic-doc`)                                             | AGPL-3.0 (depends on PyMuPDF)                                                                                                     |
+| **Marker**     | PDF, images, PPTX, DOCX, XLSX, HTML, EPUB                                                              | GPL-3.0 (Model weights are CC-BY-NC-SA-4.0 by default, with possible exemptions for non-commercial use under specific conditions) |
+| **Docling**    | PDF, DOCX, XLSX, PPTX, Markdown, AsciiDoc, HTML, XHTML, CSV, images, USPTO XML, JATS XML, Docling JSON | MIT                                                                                                                               |
+| **MarkItDown** | PDF, PPT, Word, Excel, images, audio, HTML, CSV, JSON, XML, ZIP, YouTube links, EPUB                   | MIT                                                                                                                               |
+| **olmOCR**     | PDF, images                                                                                            | Apache 2.0                                                                                                                        |
+
+
 ## 2 Performance Evaluation of Document Parsing Tools
 
 ### 2.1 Simple Comparison of MinerU, Marker, Docling, and MarkItDown
 
-The deployment environment is macOS Sequoia 15.3.2. A simple test was conducted on a 9-page PDF document:
+The deployment environment is macOS Sequoia 15.3.2. A simple comparison test was conducted on a 9-page English PDF document and an 11-page Chinese PDF document:
+
 
 1. MinerU
-    - Install MinerU:
-        
-        ```bash
-        pip install -U "magic-pdf[full]" -i https://mirrors.aliyun.com/pypi/simple
-        ```
-        
-    - Download models:
-        
-        ```bash
-        pip install modelscope
-        wget https://gcore.jsdelivr.net/gh/opendatalab/MinerU@master/scripts/download_models.py -O download_models.py
-        python download_models.py
-        ```
-        
-    - Convert the PDF document, producing JPEG images, a converted Markdown file, a JSON file, and other annotation files. Total processing time: 2 minutes 23.92 seconds:
-        
-        ```bash
-        magic-pdf -p docs/test.pdf -o data/mineru_output/ -m auto
-        ```
-        
+
+   * Install MinerU:
+
+     ```bash
+     pip install -U "magic-pdf[full]" -i https://mirrors.aliyun.com/pypi/simple
+     ```
+
+   * Download the models:
+
+     ```bash
+     pip install modelscope
+     wget https://gcore.jsdelivr.net/gh/opendatalab/MinerU@master/scripts/download_models.py -O download_models.py
+     python download_models.py
+     ```
+
+   * Convert the PDF document to generate JPEG images, a Markdown-formatted file, a JSON file, and other annotation files. The English document took 2 minutes 23.92 seconds, while the Chinese document took 2 minutes 27.70 seconds:
+
+     ```bash
+     magic-pdf -p docs/test.pdf -o data/mineru_output/ -m auto
+     ```
+
+   * Partial parsing result of the English document:
+     ![marker.png](pictures/mineru.png)
+
+   * Partial parsing result of the Chinese document:
+     ![mineru\_cn.png](pictures/mineru_cn.png)
+     ![mineru\_cn2.png](pictures/mineru_cn2.png)
+
 2. Marker
-    - Install Marker:
-        
-        ```bash
-        pip install marker-pdf[full]
-        ```
-        
-    - Convert the same PDF file, producing JPEG images and a converted Markdown file. Processing time: 20.609 seconds:
-        
-        ```bash
-        marker_single docs/test.pdf --output_dir data/marker_output
-        ```
-        
+
+   * Install Marker:
+
+     ```bash
+     pip install marker-pdf[full]
+     ```
+
+   * Convert the same PDF documents to generate JPEG images and a Markdown-formatted file. The English document took 20.609 seconds, and the Chinese document took 16.667 seconds:
+
+     ```bash
+     marker_single docs/test.pdf --output_dir data/marker_output
+     ```
+
+   * Partial parsing result of the English document:
+     ![marker.png](pictures/marker.png)
+
+   * Partial parsing result of the Chinese document:
+     ![marker\_cn.png](pictures/marker_cn.png)
+     ![marker\_cn2.png](pictures/marker_cn2.png)
+
 3. Docling
-    - Install Docling:
-        
-        ```bash
-        pip install docling
-        ```
-        
-    - Process the same PDF file, generating a converted Markdown file. Processing time: 21.407 seconds:
-        
-        ```bash
-        docling docs/test.pdf --output data/docling_output
-        ```
-        
+
+   * Install Docling:
+
+     ```bash
+     pip install docling
+     ```
+
+   * Process the same PDF documents to generate Markdown-formatted files. The English document took 21.407 seconds, and the Chinese document took 18.546 seconds:
+
+     ```bash
+     docling docs/test.pdf --output data/docling_output
+     ```
+
+   * Partial parsing result of the English document:
+     ![docling.png](pictures/docling.png)
+
+   * Partial parsing result of the Chinese document:
+     ![docling\_cn.png](pictures/docling_cn.png)
+     ![docling\_cn2.png](pictures/docling_cn2.png)
+
 4. MarkItDown
-    - Install MarkItDown:
-        
-        ```bash
-        pip install markitdown
-        ```
-        
-    - Process the same PDF file, generating a converted Markdown file (only preserving text). Processing time: 0.886 seconds:
-        
-        ```bash
-        markitdown docs/test.pdf > data/markitdown_output/document.md
-        ```
-        
 
-Summary of the above test results:
+   * Install MarkItDown:
 
-- Although MarkItDown is the fastest, its recognition quality is the poorest, especially for images, tables, and formulas. Moreover, the extracted content layout is chaotic and unsuitable for human reading.
-- For the given test case, MinerU and Marker produced slightly better results than Docling. MinerU achieved higher recognition accuracy but suffered from some garbled text and longer processing time. Marker provided a good balance between output quality and speed.
+     ```bash
+     pip install markitdown
+     ```
+
+   * Process the same PDF documents to generate a Markdown-formatted file (text only). The English document took 0.886 seconds, and the Chinese document took 3.789 seconds:
+
+     ```bash
+     markitdown docs/test.pdf > data/markitdown_output/document.md
+     ```
+
+   * Partial parsing result of the English document:
+     ![markitdown.png](pictures/markitdown.png)
+
+   * Partial parsing result of the Chinese document:
+     ![markitdown\_cn.png](pictures/markitdown_cn.png)
+
+### Summary of Test Results:
+
+* Although MarkItDown was the fastest, its recognition performance was the poorest, especially for images, tables, and formulas. Additionally, the layout of the extracted content was messy and not suitable for human reading.
+* Based on these two test cases, MinerU and Marker performed similarly. Marker had a slight advantage in table layout rendering. Docling struggled with complex tables (e.g., the second table in the Chinese document).
+* In terms of runtime, MinerU took the longest. Marker achieved faster processing while maintaining a reasonable output quality.
+
 
 ### 2.2 In-Depth Evaluation Based on OmniDocBench
 
@@ -255,6 +302,6 @@ Summary of the Open-Source Status of Document Parsing Tools:
 ## 3 Recommendations for Choosing a Document Parsing Tool
 
 - **Academic documents (formula-intensive)**: Prioritize MinerU and OLMOCR.
-- **Business reports (table-intensive)**: Prefer MinerU; if high processing speed is required, Marker is a viable option.
-- **Multi-language mixed documents**: Combine OLMOCR with MinerU for text extraction.
+- **Business reports (table-intensive)**: MinerU and Marker are preferred, with Marker being the better choice when faster processing speed is required.
+- **Multi-language mixed documents**: Combine olmOCR with MinerU for text extraction.
 - **Chinese-specialized scenarios**: Currently, no perfect tool exists; consider MinerU with additional post-processing.
