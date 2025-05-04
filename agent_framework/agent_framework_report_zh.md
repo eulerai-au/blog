@@ -54,7 +54,7 @@ LLM 开发框架是为简化 AI 应用（如 Agent、Workflow、RAG 等）的创
 
 # 五个主流Agent开发框架
 ## 开源情况与社区热度
-_表1：主流 AI Agent 框架社区活跃度对比总览_
+表1：主流 AI Agent 框架社区活跃度对比总览
 
 | 框架名称 | Stars | Commits | Issues | Forks | PR 创建者数 | 主语言 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -836,19 +836,6 @@ async with await AsyncConnection.connect(DB_URI, **connection_kwargs) as conn:
 
 ### 日志与可观测性（Logging & Monitoring）
 <font style="color:rgb(50, 56, 62);"> LangSmith 专门用来</font>**监控和调试 LLM 应用**<font style="color:rgb(50, 56, 62);">，能实时跟踪工作流、模型表现，并且 LangSmith 提供了</font>**针对大模型原生优化的可观测性功能**<font style="color:rgb(50, 56, 62);">，从开发、测试到上线 ，非常适合生产环境。 LangSmith本身</font>与框架无关 — 它可以与 langchain 和 langgraph 一起使用，也可以单独使用。对于LangGraph，我们可以集成LangSmith实现<font style="color:rgb(50, 56, 62);">生成对整个pipline的跟踪，方便调试与监看。</font>
-
----
-
-## 基本介绍
-AutoGen 是微软推出的一个开源框架，旨在通过协作的 AI 代理（Agent）来解决复杂任务。**<font style="color:rgb(17, 17, 17);">AutoGen</font>**<font style="color:rgb(17, 17, 17);"> 的核心是</font>**<font style="color:rgb(17, 17, 17);">可交谈的Agent</font>**<font style="color:rgb(17, 17, 17);">，开发者可以使用可自定义的组件对简单的Agent进行扩展，还能够将不同的Agent组合起来，形成更加强大的Agent</font>**<font style="color:rgb(17, 17, 17);">工作流</font>**<font style="color:rgb(17, 17, 17);">。 同时，它的模块化设计使得其易于实施，为开发者提供了极大的便利。</font>
-
-该框架的核心组件包括：
-
-+ **AutoGen Studio**：一个无代码的开发工具，提供可视化界面，帮助开发者快速构建和调试多代理系统。
-+ **autogen-agentchat**：一个 Python 库，支持构建对话式的单代理和多代理应用。
-+ **autogen-core**：一个事件驱动的编程框架，适用于构建可扩展的多代理 AI 系统。
-
-AutoGen 的设计目标是简化复杂 LLM 工作流的编排、自动化和优化，最大化 LLM 模型的性能，克服它们的弱点。如果你希望构建一个由多个 AI 代理协同工作的系统，AutoGen 是一个值得考虑的框架。
 
 ---
 
