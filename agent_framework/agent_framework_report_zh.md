@@ -1,4 +1,4 @@
-# 前言
+ # **如何选型？热门 AI Agent 框架深度横评**
 生成式 AI 的爆发式发展让技术选型成为开发者面临的首要挑战。几乎每天都有新的框架、工具或技术涌现，无论是个人开发者还是企业团队，在利用大语言模型（LLM）构建创新应用时，都会直面一个问题：“哪款框架最适合我的场景？”本文将从开发人员的视角，从多个维度深度横评五个主流的 AI Agent 框架——LangGraph、LlamaIndex、PydanticAI、AutoGen 和 CrewAI，为开发者提供实操导向的参考。**需要说明的是，在本文中，我们主要侧重于评测这些框架在搭建非代理型（Non-Agentic）AI Workflow 时的表现。**
 
 ## 为什么需要LLM框架？
@@ -16,7 +16,7 @@ LLM 开发框架是为简化 AI 应用（如 Agent、Workflow、RAG 等）的创
 + **代理型工作流**<font style="color:rgba(0, 0, 0, 0.87);">：由 AI 代理动态执行任务，具备推理、工具调用和上下文记忆能力。代理能在授权范围内自主收集信息、调用外部 API 或做出决策。例如，一个智能客服代理可通过分析用户意图、查询 CRM 系统并生成个性化回复，动态处理复杂交互。代理型工作流因其响应性和自适应性，特别适合多步骤、交互式或跨系统的场景。</font>
 
 ## <font style="color:rgba(0, 0, 0, 0.87);">如何选择？</font>
-我们推荐开发者可以从下面三个方向去思考和评估你的实际开发需求：
+这里推荐开发者可以从下面三个方向去思考和评估你的实际开发需求：
 
 ### 任务能不能拆成清晰步骤？
 + **能拆**：考虑选 **非代理型工作流**，拆成 Workflow。  
@@ -38,8 +38,8 @@ LLM 开发框架是为简化 AI 应用（如 Agent、Workflow、RAG 等）的创
 **融合还是训练？** 融合方向上，用现成模型做 Agent 成本低；若场景特殊（如开放性强、现有模型效果差），可考虑微调或自训模型。  
 **例子**：实验性对话系统，Agent 直接跑，效果不好再微调。
 
-### 现在做 Workflow 还是等模型进步？
-+ **现在做 Workflow**：  
+### 现在做非代理型 Workflow 还是等模型进步？
++ **现在做非代理型 Workflow**：  
 如果任务能拆分且有可靠检查点，尽快建 Workflow，验证效果。Workflow 适合快速上线，尤其在新场景验证阶段，研发成本可控。  
 **直觉泵**：问自己，“这个 Workflow 半年后会被新模型颠覆吗？” 如果 80% 的工作量会白费，考虑暂停，评估模型发展速度。
 + **等模型或靠 Agent**：  
@@ -48,8 +48,8 @@ LLM 开发框架是为简化 AI 应用（如 Agent、Workflow、RAG 等）的创
 
 > 💡Tips：
 > + **混合策略**：复杂任务常结合两者—— Workflow 应对确定性子任务，Agent 管动态决策。
-> + **别轻易改 PMF 方案**：已验证有效的方案（Product-Market Fit）无需频繁调整，除非有强需求。技术迭代快，0.5-1 年评估一次即可。
-> + **Workflow 不会被淘汰**：它在可拆分、高稳定场景中始终高效，尤其当可解释性和中间验证至关重要时。
+> + **别轻易改 PMF 方案**：已验证有效的方案（Product-Market Fit）无需频繁调整，除非有强需求。技术迭代快，每隔一定周期（如半年）评估一次即可。
+> + **非代理型Workflow 不会被淘汰**：它在可拆分、高稳定场景中始终高效，尤其当可解释性和中间验证至关重要时。
 >
 
 # 五个主流Agent开发框架
@@ -115,7 +115,6 @@ AutoGen 非常适合需要**快速原型、动态协作、多智能体消息交�
 # LangGraph
 ## 🔗 基本介绍
 ![langgraph_workflow.png](pictures/langgraph_workflow.png)
-
 LangGraph 是构建在 LangChain 之上的扩展库，旨在增强 LangChain Expression Language（LCEL）的能力，它引入了图结构（如有向无环图 DAG），使得开发者能够更清晰地定义和管理复杂的工作流，包括循环、条件分支和多智能体协作等。虽然 LangGraph 的使用相较于 LCEL 更为复杂，但它提供了更强的流程控制和状态管理能力，适用于构建需要高度可控性和可扩展性的 AI 应用。
 
 + **状态图建模**：通过节点和边的方式定义应用流程，实现精细的流程控制。
@@ -221,7 +220,7 @@ if __name__ == "__main__":
 + **Edge（边）** 与 **Conditional Edge（条件边）**：定义节点间的信息流向。条件边允许开发者基于状态逻辑实现动态分支控制。
 + **State（状态）**是由开发者定义的 TypedDict 对象，记录当前执行图的上下文信息，state<font style="color:rgb(25, 27, 31);">会在每一个Node之间传递不同的状态信息。然后每一个节点会根据自己定义的逻辑去更新这个状态信息</font>。可以使用 `TypedDict`、`Pydantic` 模型或 `dataclass` 来定义状态结构。
 
-> 💡 <font style="color:rgba(0, 0, 0, 0.87);">默认情况下，</font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">StateGraph</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 使用单个state schema 运行，并且所有节点都应使用该 schema 进行通信。但是，也可以为 </font><font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">StateGraph </font><font style="color:rgba(0, 0, 0, 0.87);">定义不同的</font>`InputState`和`OutputState`<font style="color:rgb(168, 70, 185);background-color:rgb(245, 245, 245);"> </font><font style="color:rgba(0, 0, 0, 0.87);">schema。</font>
+> 💡 <font style="color:rgba(0, 0, 0, 0.87);">默认情况下，`StateGraph`<font style="color:rgba(0, 0, 0, 0.87);"> 使用单个`state schema` 运行，并且所有节点都应使用该 schema 进行通信。但是，也可以为 </font><font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">StateGraph </font><font style="color:rgba(0, 0, 0, 0.87);">定义不同的</font>`InputState`和`OutputState`<font style="color:rgb(168, 70, 185);background-color:rgb(245, 245, 245);"> </font><font style="color:rgba(0, 0, 0, 0.87);">schema。</font>
 >
 
 #### 📌 State 中的每个 key 都可以有自己独立的 reducer 函数，该函数控制如何应用来自节点的更新。
@@ -362,14 +361,16 @@ except GraphRecursionError:
 #### 📌 并行执行
 **Super-Step概念**
 
-LangGraph 的执行模型基于 **super-step**。一个 super-step 可以被认为是图中的一次迭代，所有并行执行的节点都属于同一个 super-step，而顺序执行的节点则会被分配到不同的 super-step。<font style="color:rgb(51, 65, 85);">这每当图运行时，所有节点都处于一个</font>`<font style="color:rgb(51, 65, 85);">inactive</font>`<font style="color:rgb(51, 65, 85);">状态。每当传入边收到新消息（状态）时，该节点变为</font>`<font style="color:rgb(51, 65, 85);">active</font>`<font style="color:rgb(51, 65, 85);">，运行函数并进行更新响应。在每个 super-step结束时，每个节点都会</font>`<font style="color:rgb(51, 65, 85);">halt</font>`<font style="color:rgb(51, 65, 85);">通过将自己标记为</font>`<font style="color:rgb(51, 65, 85);">inactive</font>`<font style="color:rgb(51, 65, 85);">不再有传入消息来投票。当所有节点都</font>`<font style="color:rgb(51, 65, 85);">inactive</font>`<font style="color:rgb(51, 65, 85);">且没有消息在传输时，图终止。</font>
+LangGraph 的执行模型基于 **super-step**。一个 super-step 可以被认为是图中的一次迭代，所有并行执行的节点都属于同一个 super-step，而顺序执行的节点则会被分配到不同的 super-step。<font style="color:rgb(51, 65, 85);">这每当图运行时，所有节点都处于一个</font>`inactive`<font style="color:rgb(51, 65, 85);">状态。每当传入边收到新消息（状态）时，该节点变为`active`<font style="color:rgb(51, 65, 85);">，运行函数并进行更新响应。在每个 super-step结束时，每个节点都会</font>`halt`<font style="color:rgb(51, 65, 85);">通过将自己标记为</font>`inactive`<font style="color:rgb(51, 65, 85);">不再有传入消息来投票。当所有节点都`inactive`<font style="color:rgb(51, 65, 85);">且没有消息在传输时，图终止。</font>
 
-+ **并行执行**<font style="color:rgb(25, 27, 31);">：</font>**<font style="color:rgb(25, 27, 31);">当多个节点在同一个 super-step 中执行时，它们会并行运行</font>**<font style="color:rgb(25, 27, 31);">。比如，当节点 </font>`<font style="color:rgb(25, 27, 31);">a</font>`<font style="color:rgb(25, 27, 31);"> 之后有两个节点 </font>`<font style="color:rgb(25, 27, 31);">b</font>`<font style="color:rgb(25, 27, 31);"> 和 </font>`<font style="color:rgb(25, 27, 31);">c</font>`<font style="color:rgb(25, 27, 31);">，它们可以并行执行。</font>
-+ **顺序执行**<font style="color:rgb(25, 27, 31);">：</font>**<font style="color:rgb(25, 27, 31);">当一个节点的执行依赖于多个其他节点的完成时，必须等待这些节点的执行结果</font>**<font style="color:rgb(25, 27, 31);">。比如，如果节点 </font>`<font style="color:rgb(25, 27, 31);">d</font>`<font style="color:rgb(25, 27, 31);"> 依赖于节点 </font>`<font style="color:rgb(25, 27, 31);">b2</font>`<font style="color:rgb(25, 27, 31);"> 和 </font>`<font style="color:rgb(25, 27, 31);">c</font>`<font style="color:rgb(25, 27, 31);">，则 </font>`<font style="color:rgb(25, 27, 31);">d</font>`<font style="color:rgb(25, 27, 31);"> 会在 </font>`<font style="color:rgb(25, 27, 31);">b2</font>`<font style="color:rgb(25, 27, 31);"> 和 </font>`<font style="color:rgb(25, 27, 31);">c</font>`<font style="color:rgb(25, 27, 31);"> 都完成之后执行。</font>
++ **并行执行**<font style="color:rgb(25, 27, 31);">：</font>**<font style="color:rgb(25, 27, 31);">当多个节点在同一个 super-step 中执行时，它们会并行运行</font>**<font style="color:rgb(25, 27, 31);">。比如，当节点 </font>`a`<font style="color:rgb(25, 27, 31);"> 之后有两个节点 </font>`b`<font style="color:rgb(25, 27, 31);"> 和 </font>`c`<font style="color:rgb(25, 27, 31);">，它们可以并行执行。</font>
++ **顺序执行**<font style="color:rgb(25, 27, 31);">：</font>**<font style="color:rgb(25, 27, 31);">当一个节点的执行依赖于多个其他节点的完成时，必须等待这些节点的执行结果</font>**<font style="color:rgb(25, 27, 31);">。比如，如果节点 </font>`d`<font style="color:rgb(25, 27, 31);"> 依赖于节点 `b2`<font style="color:rgb(25, 27, 31);"> 和 </font>`c`<font style="color:rgb(25, 27, 31);">，则 </font>`d`<font style="color:rgb(25, 27, 31);"> 会在 </font>`b2`<font style="color:rgb(25, 27, 31);"> 和 </font>`c`<font style="color:rgb(25, 27, 31);"> 都完成之后执行。</font>
 
-![workflow_sample.png](workflow_sample.png)
+<div style="text-align: center;">
+  <img src="pictures/workflow_sample.png" alt="Workflow Sample">
+</div>
 
-> 💡对于上述情况，b、c同属一个super step，我们需要使用<font style="color:rgba(0, 0, 0, 0.87);"> </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">add_edge（[“b_2”， “c”]， “d”）</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 来强制节点 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">“d”</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 仅在节点 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">“b_2”</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 和 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">“c”</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 都完成执行时运行。否则如果分别加两条边，会导致d执行两次</font>
+> 💡对于上述情况，`b`、`c`同属一个`super step`，我们需要使用<font style="color:rgba(0, 0, 0, 0.87);"> </font>`add_edge([“b_2”, “c”], “d”)`<font style="color:rgba(0, 0, 0, 0.87);"> 来强制节点 </font>`“d”`<font style="color:rgba(0, 0, 0, 0.87);"> 仅在节点 </font>`“b_2”`<font style="color:rgba(0, 0, 0, 0.87);"> 和 </font>`“c”`<font style="color:rgba(0, 0, 0, 0.87);"> 都完成执行时运行。否则如果分别加两条边，会导致`d`执行两次</font>
 >
 
 **Map-Reduce并行**
@@ -425,7 +426,7 @@ print(output)
 ```
 
 #### 📌 节点重试策略
- LangGraph 引入了节点级的** RetryPolicy **。  <font style="color:rgba(0, 0, 0, 0.87);">可以在调用</font>`<font style="color:rgba(0, 0, 0, 0.87);">add_node</font>`<font style="color:rgba(0, 0, 0, 0.87);">函数时传递 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">RetryPolicy</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 对象</font>
+ LangGraph 引入了节点级的** RetryPolicy **。  <font style="color:rgba(0, 0, 0, 0.87);">可以在调用</font>`add_node`<font style="color:rgba(0, 0, 0, 0.87);">函数时传递 </font>`RetryPolicy`<font style="color:rgba(0, 0, 0, 0.87);"> 对象</font>
 
 ```python
 from langgraph.pregel import RetryPolicy
@@ -455,8 +456,8 @@ class State(TypedDict):
 
 要将同步改为异步，只需要：
 
-+ <font style="color:rgba(0, 0, 0, 0.87);">将节点函数从 </font>`<font style="color:rgba(0, 0, 0, 0.87);">def</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 修改为 </font>`<font style="color:rgba(0, 0, 0, 0.87);">async def</font>`<font style="color:rgba(0, 0, 0, 0.87);">；</font>
-+ <font style="color:rgba(0, 0, 0, 0.87);">在节点内部正确使用 </font>`<font style="color:rgba(0, 0, 0, 0.87);">await</font>`<font style="color:rgba(0, 0, 0, 0.87);">；</font>
++ <font style="color:rgba(0, 0, 0, 0.87);">将节点函数从 </font>`def`<font style="color:rgba(0, 0, 0, 0.87);"> 修改为 </font>`async def`<font style="color:rgba(0, 0, 0, 0.87);">；</font>
++ <font style="color:rgba(0, 0, 0, 0.87);">在节点内部正确使用 </font>`await`<font style="color:rgba(0, 0, 0, 0.87);">；</font>
 
 <font style="color:rgba(0, 0, 0, 0.87);">由于许多 LangChain 对象遵循 Runnable 协议，且同步方法通常都有对应的异步版本，因此整体迁移过程通常较为简单。</font>
 
@@ -695,7 +696,7 @@ if __name__ == "__main__":
 
 ### 持久化（Persistence）
 #### 📌 线程级持久化
-<font style="color:rgba(0, 0, 0, 0.87);">许</font><font style="color:rgba(0, 0, 0, 0.87);">多 AI 应用程序需要内存才能在多个交互之间共享上下文。在 LangGraph 中，可以使用线程级持久化将这种内存添加到任何StateGraph 中，可以通过在编译 Graph 时添加</font>`<font style="color:rgba(0, 0, 0, 0.87);">checkpointer</font>`<font style="color:rgba(0, 0, 0, 0.87);">来设置它以保持其状态。</font>
+<font style="color:rgba(0, 0, 0, 0.87);">许</font><font style="color:rgba(0, 0, 0, 0.87);">多 AI 应用程序需要内存才能在多个交互之间共享上下文。在 LangGraph 中，可以使用线程级持久化将这种内存添加到任何StateGraph 中，可以通过在编译 Graph 时添加</font>`checkpointer`<font style="color:rgba(0, 0, 0, 0.87);">来设置它以保持其状态。</font>
 
 ```python
 from langgraph.checkpoint.memory import MemorySaver
@@ -749,7 +750,7 @@ for chunk in graph.stream(
 ```
 
 #### 📌 跨线程持久化
-<font style="color:rgba(0, 0, 0, 0.87);">当然LangGraph 还支持跨</font>**<font style="color:rgba(0, 0, 0, 0.87);">多个线程</font>**<font style="color:rgba(0, 0, 0, 0.87);">持久保存数据。核心是使用</font>`<font style="color:rgba(0, 0, 0, 0.87);"> Store </font>`<font style="color:rgba(0, 0, 0, 0.87);"> 接口存储跨线程共享数据（如用户偏好）。</font>`<font style="color:rgba(0, 0, 0, 0.87);">namespace</font>`<font style="color:rgba(0, 0, 0, 0.87);">（如 </font>`<font style="color:rgba(0, 0, 0, 0.87);">("memories", user_id)</font>`<font style="color:rgba(0, 0, 0, 0.87);">）隔离不同用户的记忆。</font>
+<font style="color:rgba(0, 0, 0, 0.87);">当然LangGraph 还支持跨</font>**<font style="color:rgba(0, 0, 0, 0.87);">多个线程</font>**<font style="color:rgba(0, 0, 0, 0.87);">持久保存数据。核心是使用</font>`Store`<font style="color:rgba(0, 0, 0, 0.87);"> 接口存储跨线程共享数据（如用户偏好）。</font>`namespace`（如 </font>`("memories", user_id)`<font style="color:rgba(0, 0, 0, 0.87);">）隔离不同用户的记忆。</font>
 
 #### 📌 使用Postgres checkpointer持久化
 ```python
@@ -761,7 +762,7 @@ checkpointer = # postgres checkpointer
 graph = builder.compile(checkpointer=checkpointer)
 ```
 
-> 💡<font style="color:rgba(0, 0, 0, 0.87);"> 需要在 checkpointer 上运行一次 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">.setup（）</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 来初始化数据库，然后才能使用。</font>
+> 💡<font style="color:rgba(0, 0, 0, 0.87);"> 需要在 checkpointer 上运行一次 </font>`.setup()`<font style="color:rgba(0, 0, 0, 0.87);"> 来初始化数据库，然后才能使用。</font>
 >
 
 **同步连接（****<font style="color:rgba(0, 0, 0, 0.87);">sync connection</font>****）**
@@ -881,7 +882,7 @@ LlamaIndex 是一个用于LLM 应用程序的数据框架，用于注入，结�
 1. 创建工作流实例。
 2. 调用 `run()` 方法，启动工作流并传入初始事件。
 3. 步骤依次执行，每个步骤基于前一个步骤的输出生成新的事件。
-4. <font style="color:rgba(0, 0, 0, 0.87);">默认情况下，工作流程是异步的，因此可以使用 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">await</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 来获取 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">run</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 命令的结果</font>
+4. <font style="color:rgba(0, 0, 0, 0.87);">默认情况下，工作流程是异步的，因此可以使用 </font>`await`<font style="color:rgba(0, 0, 0, 0.87);"> 来获取 </font>`run`<font style="color:rgba(0, 0, 0, 0.87);"> 命令的结果</font>
 
 ```python
 from llama_index.core.workflow import (
@@ -951,10 +952,10 @@ from llama_index.utils.workflow import draw_all_possible_flows
     draw_all_possible_flows(MyWorkflow, filename="multi_step_workflow.html")
 ```
 
-![](https://cdn.nlark.com/yuque/0/2025/png/39292651/1745811472726-46409992-b07c-43f4-bcf5-7f92d0b1d021.png)
+![](pictures/llamaindex_wf.png)
 
 ### 状态管理（State Management）
-Demo示例中使用的都是自定义事件的属性逐步传递数据，这种链式传输方式存在问题就是不够灵活，例如我们难以**跨节点传递数据**，缺少一个全局的上下文状态管理方式。因此，LlamaIndex引入了`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">Context</font>`<font style="color:rgba(0, 0, 0, 0.87);"> </font><font style="color:rgba(0, 0, 0, 0.87);">类型的参数来补充这一点，示例如下：</font>
+Demo示例中使用的都是自定义事件的属性逐步传递数据，这种链式传输方式存在问题就是不够灵活，例如我们难以**跨节点传递数据**，缺少一个全局的上下文状态管理方式。因此，LlamaIndex引入了`Context`<font style="color:rgba(0, 0, 0, 0.87);"> </font><font style="color:rgba(0, 0, 0, 0.87);">类型的参数来补充这一点，示例如下：</font>
 
 ```python
 from llama_index.core.workflow import (
@@ -967,7 +968,7 @@ from llama_index.core.workflow import (
 )
 ```
 
-<font style="color:rgba(0, 0, 0, 0.87);">现在，我们定义一个 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">start</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 事件，用于检查数据是否已加载到上下文中。否则，它将返回一个 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">SetupEvent</font>`<font style="color:rgba(0, 0, 0, 0.87);">，该事件触发加载数据并循环回到 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">start</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 的 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">setup</font>`<font style="color:rgba(0, 0, 0, 0.87);">。</font>
+<font style="color:rgba(0, 0, 0, 0.87);">现在，我们定义一个 </font>`start`<font style="color:rgba(0, 0, 0, 0.87);"> 事件，用于检查数据是否已加载到上下文中。否则，它将返回一个 </font>`SetupEvent`<font style="color:rgba(0, 0, 0, 0.87);">，该事件触发加载数据并循环回到 </font>`start`<font style="color:rgba(0, 0, 0, 0.87);"> 的 </font>`setup`<font style="color:rgba(0, 0, 0, 0.87);">。</font>
 
 ```python
 class SetupEvent(Event):
@@ -998,7 +999,7 @@ class StatefulFlow(Workflow):
         return StartEvent(query=ev.query)
 ```
 
-<font style="color:rgba(0, 0, 0, 0.87);">然后在 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">step_two</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 中，我们可以直接从上下文访问数据，而无需显式传递数据。</font>
+<font style="color:rgba(0, 0, 0, 0.87);">然后在 </font>`step_two`<font style="color:rgba(0, 0, 0, 0.87);"> 中，我们可以直接从上下文访问数据，而无需显式传递数据。</font>
 
 ```python
 @step
@@ -1015,9 +1016,9 @@ print(result)
 
 ### 细粒度控制（Control Granularity）
 #### 📌 分支（branch）
-如下所示，我们新建了两个事件类型，`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">Start</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 随机决定采用一个分支或另一个分支，然后每个分支中的多个步骤完成工作流。</font>
+如下所示，我们新建了两个事件类型，`Start`<font style="color:rgba(0, 0, 0, 0.87);"> 随机决定采用一个分支或另一个分支，然后每个分支中的多个步骤完成工作流。</font>
 
-> 💡 <font style="color:rgba(0, 0, 0, 0.87);">支持按任何 Order 组合分支和循环来满足不同业务应用需求。还可以 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">send_event</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 并行运行多个分支，并使用 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">collect_events</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 同步它们</font>
+> 💡 <font style="color:rgba(0, 0, 0, 0.87);">支持按任何 Order 组合分支和循环来满足不同业务应用需求。还可以 </font>`send_event`<font style="color:rgba(0, 0, 0, 0.87);"> 并行运行多个分支，并使用 </font>`collect_events`<font style="color:rgba(0, 0, 0, 0.87);"> 同步它们</font>
 >
 
 ```python
@@ -1039,7 +1040,7 @@ class BranchWorkflow(Workflow):
 ```
 
 #### 📌 循环（loop）
-<font style="color:rgba(0, 0, 0, 0.87);">要创建循环，我们将采用上一教程中的示例 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">MyWorkflow</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 并添加一个新的自定义事件类型。我们将其命名为 </font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">LoopEvent</font>`<font style="color:rgba(0, 0, 0, 0.87);">，但同样，它可以具有任意名称。</font>
+<font style="color:rgba(0, 0, 0, 0.87);">要创建循环，我们将采用上一教程中的示例 </font>`MyWorkflow`<font style="color:rgba(0, 0, 0, 0.87);"> 并添加一个新的自定义事件类型。我们将其命名为 </font>`LoopEvent`<font style="color:rgba(0, 0, 0, 0.87);">，但同样，它可以具有任意名称。</font>
 
 ```python
 class LoopEvent(Event):
@@ -1556,7 +1557,7 @@ async def get_system_prompt(ctx: RunContext[MyDeps]) -> str:
     return f'Prompt: {response.text}'
 ```
 
-> 💡系统提示函数、函数工具 和 结果验证器 <font style="color:rgba(0, 0, 0, 0.87);">都在代理运行的异步上下文中运行。如果这些函数不是协程（例如</font>`<font style="color:rgba(0, 0, 0, 0.87);">async for</font>`<font style="color:rgba(0, 0, 0, 0.87);">），则会使用</font>`<font style="color:rgba(0, 0, 0, 0.87);"> </font>run_in_executor` <font style="color:rgba(0, 0, 0, 0.87);">在线程池中调用它们，因此，如果依赖项执行 IO 操作，则最好使用</font>`<font style="color:rgba(0, 0, 0, 0.87);">async</font>`<font style="color:rgba(0, 0, 0, 0.87);">方法，尽管同步依赖项也可以正常工作。</font>
+> 💡系统提示函数、函数工具 和 结果验证器 <font style="color:rgba(0, 0, 0, 0.87);">都在代理运行的异步上下文中运行。如果这些函数不是协程（例如</font>`async for`<font style="color:rgba(0, 0, 0, 0.87);">），则会使用</font>`run_in_executor` <font style="color:rgba(0, 0, 0, 0.87);">在线程池中调用它们，因此，如果依赖项执行 IO 操作，则最好使用</font>`async`<font style="color:rgba(0, 0, 0, 0.87);">方法，尽管同步依赖项也可以正常工作。</font>
 >
 
 #### 📌 类型安全
@@ -1687,7 +1688,7 @@ Pydantic Logfire 是一个由创建和维护 Pydantic 和 PydanticAI 的团队�
     - **动态边缘类型检查**：节点通过 run 方法的返回类型注解定义出边（指向下一个节点或 End），确保图的结构在类型层面是安全的。例如，Union[AnotherNode, End[int]] 允许节点动态决定后续路径，同时保持类型约束。
 + **异步支持**
     - **全异步节点执行**：所有节点的 run 方法均为异步（async def），支持处理异步操作，如网络请求、文件 IO 或调用外部 API。这使得 `pydanticai-graph` 非常适合高并发场景，例如实时数据处理或与 LLM 的交互。
-    - **异步迭代**：<font style="color:rgba(0, 0, 0, 0.87);">有时你希望在图执行时直接控制或深入了解每个节点。最简单的方法是使用</font>` Graph.iter`<font style="color:rgba(0, 0, 0, 0.87);">方法，该方法返回一个</font>**<font style="color:rgba(0, 0, 0, 0.87);">上下文管理器</font>**<font style="color:rgba(0, 0, 0, 0.87);">，该管理器产生一个</font>`GraphRun`<font style="color:rgba(0, 0, 0, 0.87);"> 对象。</font>`<font style="color:rgb(54, 70, 78);background-color:rgb(245, 245, 245);">GraphRun</font>`<font style="color:rgba(0, 0, 0, 0.87);"> 是图中节点的异步可迭代对象，允许你在节点执行时记录或修改它们</font>
+    - **异步迭代**：<font style="color:rgba(0, 0, 0, 0.87);">有时你希望在图执行时直接控制或深入了解每个节点。最简单的方法是使用</font>` Graph.iter`<font style="color:rgba(0, 0, 0, 0.87);">方法，该方法返回一个</font>**<font style="color:rgba(0, 0, 0, 0.87);">上下文管理器</font>**<font style="color:rgba(0, 0, 0, 0.87);">，该管理器产生一个</font>`GraphRun`<font style="color:rgba(0, 0, 0, 0.87);"> 对象。</font>`GraphRun`<font style="color:rgba(0, 0, 0, 0.87);"> 是图中节点的异步可迭代对象，允许你在节点执行时记录或修改它们</font>
 + **依赖注入**
     - **类型安全的依赖注入**：通过 GraphRunContext.deps 和泛型参数 DepsT，支持在节点中注入外部依赖（如数据库连接、执行器或配置对象）。开发者可通过 dataclass 或 Pydantic 模型定义依赖结构。
     - **测试友好**：依赖注入便于模拟依赖项，支持单元测试和集成测试。例如，可以注入模拟的数据库客户端或日志记录器。

@@ -1,5 +1,5 @@
 # Preface
-The explosive growth of generative AI has made technology selection a primary challenge for developers. Almost every day, new frameworks, tools, or technologies emerge. Whether you're an individual developer or part of an enterprise team, building innovative applications with large language models (LLMs) raises a critical question: "Which framework is best suited for my use case?" This article provides a deep, practical comparison of five mainstream AI Agent frameworks—LangGraph, LlamaIndex, PydanticAI, AutoGen, and CrewAI—from a developer's perspective, across multiple dimensions, to serve as a hands-on reference. **Note that this article focuses primarily on evaluating these frameworks' performance in building non-agentic AI workflows.**
+The explosive growth of generative AI has made technology selection a primary challenge for developers. Almost every day, new frameworks, tools, or technologies emerge. Whether you're an individual developer or part of an enterprise team, building innovative applications with large language models (LLMs) raises a critical question: "Which framework is best suited for my use case?" This article provides a deep, practical comparison of five popular AI Agent frameworks—LangGraph, LlamaIndex, PydanticAI, AutoGen, and CrewAI—from a developer's perspective, across multiple dimensions, to serve as a hands-on reference. **Note that this article focuses primarily on evaluating these frameworks' performance in building non-agentic AI workflows.**
 
 ## Why Do We Need LLM Frameworks?
 LLM development frameworks are software platforms designed to simplify the creation, deployment, and management of AI applications (e.g., Agents, Workflows, RAG). These frameworks provide pre-built components, abstracted interfaces, and development tools to help developers efficiently build complex AI systems. Through standardized development paradigms and modular architectures, LLM frameworks allow developers to focus on the unique logic and innovation of their applications without reinventing the wheel. Whether for rapid prototyping or production-grade deployment, choosing the right LLM framework for your use case can significantly reduce development barriers and time costs.
@@ -8,6 +8,7 @@ LLM development frameworks are software platforms designed to simplify the creat
 Workflows are event-driven, step-based methods for controlling the execution flow of applications. As generative AI applications become increasingly complex, managing data flows and controlling application execution becomes more challenging. Workflows break tasks into modular sub-steps, offering greater flexibility and maintainability. This is particularly valuable in scenarios involving multi-agent collaboration or cross-system interactions, significantly improving development efficiency and system robustness.
 
 ## Agentic vs. Non-Agentic Workflows
+![agentic_workflow.png](pictures/agentic_workflow.png)
 AI workflows can be categorized into non-agentic and agentic based on their level of autonomy:
 
 + **Non-Agentic Workflows**: Rely on the input-output capabilities of LLMs to execute predefined, deterministic steps. For example, a text summarization task might involve: input long text → LLM generates summary → output result. Such workflows are suitable for well-defined scenarios like content generation or data processing but lack dynamic decision-making or environmental adaptability.
@@ -49,9 +50,9 @@ If the Workflow is too complex after decomposition or current models perform poo
 > + **Don’t Over-Optimize Proven Solutions**: Stick with validated Product-Market Fit (PMF) solutions unless there’s a strong need for change. With rapid tech iteration, reassess every 0.5–1 year.
 > + **Workflows Won’t Be Obsolete**: They remain efficient for decomposable, high-stability scenarios, especially when interpretability and intermediate validation are critical.
 
-# Five Mainstream Agent Development Frameworks
+# Five Popular Agent Development Frameworks
 ## Open-Source Status and Community Activity
-_Table 1: Overview of Community Activity for Mainstream AI Agent Frameworks_
+_Table 1: Overview of Community Activity for Popular AI Agent Frameworks_
 
 | Framework | Stars | Commits | Issues | Forks | PR Creators | Primary Language |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -61,7 +62,7 @@ _Table 1: Overview of Community Activity for Mainstream AI Agent Frameworks_
 | **AutoGen** | 41,610 | 14,143 | 2,667 | 6,624 | 571 | Python |
 | **CrewAI** | 29,091 | 5,245 | 1,290 | 4,129 | 364 | Python |
 
-_Table 2: Community Activity for Mainstream AI Agent Frameworks in the Last 28 Days_
+_Table 2: Community Activity for Popular AI Agent Frameworks in the Last 28 Days_
 
 | Framework | Stars Growth | PR (Open) | PR (Merged) | Issues (Open) | Issues (Closed) | Commits |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -107,6 +108,7 @@ Below is a comprehensive evaluation of the five frameworks across technical feat
 
 # LangGraph
 ## 🔗 Basic Introduction
+![langgraph_workflow.png](pictures/langgraph_workflow.png)
 LangGraph is an extension library built on top of LangChain, designed to enhance the capabilities of LangChain Expression Language (LCEL). It introduces graph structures (e.g., Directed Acyclic Graphs, DAGs), enabling developers to clearly define and manage complex workflows, including loops, conditional branching, and multi-agent collaboration. While LangGraph is more complex than LCEL, it offers superior process control and state management, making it suitable for building highly controllable and scalable AI applications.
 
 + **State Graph Modeling**: Defines application flows using nodes and edges for precise process control.
@@ -356,7 +358,9 @@ LangGraph’s execution model is based on **super-steps**. A super-step represen
 
 + **Parallel Execution**: When multiple nodes execute in the same super-step, they run concurrently. For example, if node `a` triggers nodes `b` and `c`, they execute in parallel.
 + **Sequential Execution**: When a node depends on the completion of multiple other nodes, it waits for their results. For example, if node `d` depends on nodes `b2` and `c`, `d` executes only after both `b2` and `c` complete.
-
+<div style="text-align: center;">
+  <img src="pictures/workflow_sample.png" alt="Workflow Sample">
+</div>
 > 💡 For the above case, where `b` and `c` are in the same super-step, use `add_edge(["b_2", "c"], "d")` to ensure node `d` runs only after both `b_2` and `c` complete. Adding separate edges would cause `d` to execute twice.
 >
 
@@ -930,6 +934,7 @@ LlamaIndex’s standout feature is its built-in visualization tools, which can g
 from llama_index.utils.workflow import draw_all_possible_flows
 draw_all_possible_flows(MyWorkflow, filename="multi_step_workflow.html")
 ```
+![](pictures/llamaindex_wf.png)
 
 ### State Management
 The demo example uses attributes of custom events to pass data sequentially, but this chained approach lacks flexibility, such as **cross-node data passing** or global context state management. To address this, LlamaIndex introduces the `Context` type parameter, as shown below:
@@ -1030,6 +1035,7 @@ async def text_summary_step(self, ev: ParsedTextEvent | LoopEvent) -> Summarized
         print(f"Summarizing parsed text: {ev.parsed_text}")
         return SummarizedTextEvent(summary="Summary of the parsed text.")
 ```
+![](pictures/loop.png)
 
 #### 📌 Subclassing Workflows
 Workflows can be extended or redefined like regular Python classes through inheritance (`class NewWorkflow(BaseWorkflow)`).
@@ -1407,19 +1413,22 @@ await handler
 
 ---
 
+Below is the complete English translation of the provided Markdown content, filling in the missing sections while maintaining the original structure, tone, and details. The translation adheres strictly to the original content without adding extraneous information, and it includes the remaining sections such as **Message History**, **Streaming Output**, **Persistence**, **Debugging and Monitoring**, and **Graph-Based Async State Machine**. Since the original request only provided partial content for **Pydantic AI** and did not include **AutoGen** or **CrewAI**, this response focuses solely on completing the **Pydantic AI** section as requested. If you need translations or evaluations for **AutoGen** and **CrewAI**, please provide the relevant Markdown content or specify the requirements.
+
+---
+
 # Pydantic AI
 ## Basic Introduction
-Pydantic AI, developed by the creators of the renowned Pydantic library, is an agent development framework that integrates Pydantic with LLMs. Its unique strength lies in leveraging Pydantic’s **type validation, serialization, and structured output** capabilities. Pydantic AI excels in **natural structured output and strong type validation**, is lightweight and easy to use, and integrates well with other frameworks.
+Pydantic AI, developed by the creators of the renowned Pydantic library, is an agent development framework that integrates Pydantic with large language models (LLMs). Its unique strength lies in leveraging Pydantic’s **type validation, serialization, and structured output** capabilities in AI applications. Pydantic AI excels in **natural structured output and strong type validation**, is lightweight and easy to use, and integrates well with other frameworks for combined usage.
 
 > _Official Reference_: [PydanticAI Documentation](https://ai.pydantic.dev/), [PydanticAI GitHub](https://github.com/pydantic/pydantic-ai).
->
 
 ## Framework Evaluation
 ### Usage Instructions
 #### 📌 Agent
 PydanticAI’s agent module is its core component, designed to provide a structured, type-safe, and highly extensible way to build AI applications interacting with large language models (LLMs).
 
-An agent instance combines:
+An agent instance combines the following elements:
 
 + **System Prompt**: Developer-defined instructions guiding LLM behavior.
 + **Function Tools**: Functions the LLM can call during response generation to fetch information or perform actions.
@@ -1429,27 +1438,26 @@ An agent instance combines:
 + **Model Settings**: Optional default model settings for fine-tuning requests, also configurable at runtime.
 
 > 💡 In type terminology, an agent is generic in its dependency and result types. For example, an agent requiring `Foobar` dependencies and returning `list[str]` results is typed as `Agent[Foobar, list[str]]`.
->
 
-PydanticAI offers multiple ways to run agents for different scenarios:
+PydanticAI offers multiple ways to run agents to accommodate different use cases:
 
-1. **Async Run**: `agent.run()` returns a coroutine, suitable for async environments.
-2. **Sync Run**: `agent.run_sync()` is a synchronous function for sync environments.
+1. **Async Run**: `agent.run()` returns a coroutine, suitable for asynchronous environments.
+2. **Sync Run**: `agent.run_sync()` is a synchronous function for synchronous environments.
 3. **Streaming Run**: `agent.run_stream()` returns an async iterable for streaming responses.
-4. **Iterative Run**: `agent.iter()` returns a context manager for manual control over the agent’s execution.
+4. **Iterative Run**: `agent.iter()` returns a context manager, allowing manual control over the agent’s execution process.
 
 #### 📌 Function Tools
-PydanticAI’s function tools mechanism allows agents to call external functions at runtime to fetch additional information or perform tasks, enhancing model responsiveness.
+PydanticAI’s function tools mechanism allows agents to call external functions at runtime to fetch additional information or perform specific tasks, enhancing the model’s responsiveness.
 
 **Registration Methods**:
 
 + Use `@agent.tool` to register tools requiring access to the agent context.
-+ Use `@agent.tool_plain` for tools not needing context access.
++ Use `@agent.tool_plain` to register tools that do not need access to the agent context.
 + Register tool functions or `Tool` instances via the `tools` parameter in the `Agent` constructor.
 
 **Dynamic Function Tools**
 
-PydanticAI supports dynamic function tools, where tool definitions can be modified or included based on runtime context. This is achieved by defining a `prepare` function for the tool, called at runtime to customize behavior or decide whether to register the tool.
+PydanticAI supports dynamic function tools, where tool definitions can be modified or included based on runtime context. This is achieved by defining a `prepare` function for the tool, which is called at runtime to customize the tool’s behavior or decide whether to register it.
 
 ```python
 # Define prepare function
@@ -1469,23 +1477,23 @@ result = agent.run_sync('testing...', deps=42)
 print(result.data)  # Tool registered and called
 ```
 
-**Tool and Structured Result Relationship**
+**Relationship Between Tools and Structured Results**
 
-Tool parameters and return values can be defined as Pydantic models, ensuring structured and type-safe data. PydanticAI extracts parameter descriptions from function docstrings, automatically generating JSON schemas for tools to enhance model understanding.
+Tool parameters and return values can be defined as Pydantic models, ensuring structured and type-safe data. Additionally, PydanticAI extracts parameter descriptions from function docstrings, automatically generating JSON schemas for tools to enhance the model’s understanding.
 
 #### 📌 Result Validation
-PydanticAI’s result module (`pydantic_ai.result`) provides a structured way to handle agent execution outputs, ensuring responses match expected formats and types.
+PydanticAI’s result module (`pydantic_ai.result`) provides a structured way to handle outputs from agent execution, ensuring generated responses conform to expected formats and types.
 
-+ **Result Type**: Defines the expected output format, ranging from simple `str` to complex Pydantic models.
++ **Result Type**: Defines the expected output format, which can be a simple `str` type or a complex Pydantic model.
 + **Result Wrapper Classes**:
   + `AgentRunResult`: Wraps results for synchronous runs.
   + `StreamedRunResult`: Wraps results for streaming runs.
-+ **Structured Responses**: When the result type is a Pydantic model, PydanticAI generates corresponding JSON schemas and validates model outputs, ensuring type safety and structural consistency.
++ **Structured Responses**: When the result type is a Pydantic model, PydanticAI automatically generates corresponding JSON schemas and validates the model’s output, ensuring type safety and structural consistency.
 
 #### 📌 Dependency Injection
-PydanticAI provides a unique dependency injection system to supply data and services to agent systems, prompts, tools, and result validators, particularly useful for testing.
+PydanticAI provides a unique dependency injection system to supply data and services to agent systems, prompts, tools, and result validators, which is particularly useful for testing.
 
-+ **Define Dependencies**: Dependencies can be any Python type, often encapsulated in dataclasses (`@dataclass`) for multiple dependency objects, such as API keys and HTTP clients.
++ **Define Dependencies**: Dependencies can be any Python type, typically encapsulated in dataclasses (`@dataclass`) to bundle multiple dependency objects, such as API keys and HTTP clients.
 
 ```python
 from dataclasses import dataclass
@@ -1497,7 +1505,7 @@ class MyDeps:
     http_client: httpx.AsyncClient
 ```
 
-+ **Register Dependency Types**: Specify the dependency dataclass type via the `deps_type` parameter when creating an agent to enable type checking.
++ **Register Dependency Types**: When creating an agent, specify the dependency dataclass type via the `deps_type` parameter to enable type checking.
 
 ```python
 from pydantic_ai import Agent
@@ -1508,7 +1516,7 @@ agent = Agent(
 )
 ```
 
-+ **Access Dependencies**: In system prompt functions, tool functions, and result validators, access dependencies via the `RunContext` type. `RunContext` uses generic parameters to specify dependency types, ensuring type safety.
++ **Access Dependencies**: In system prompt functions, tool functions, and result validators, dependencies are accessed via the `RunContext` type. `RunContext` uses generic parameters to specify dependency types, ensuring type safety.
 
 ```python
 from pydantic_ai import RunContext
@@ -1522,365 +1530,332 @@ async def get_system_prompt(ctx: RunContext[MyDeps]) -> str:
     return f'Prompt: {response.text}'
 ```
 
-> 💡 System prompt functions, function tools, and result validators run in the agent’s async context. If these functions are not coroutines (e.g., not `async def`), they are called in a thread pool via `run_in_executor`. For I/O operations, use `async` methods, though synchronous dependencies work fine.
->
+> 💡 System prompt functions, function tools, and result validators run in the agent’s asynchronous context. If these functions are not coroutines (e.g., using `async def`), they are executed in a thread pool using `run_in_executor`. For dependencies performing I/O operations, it’s preferable to use `async` methods, although synchronous dependencies work as well.
 
 #### 📌 Type Safety
-The framework supports type safety through:
+Based on the preceding sections, the framework supports type safety through the following methods:
 
-+ Pydantic models
-+ Static type checking
-+ Runtime validation
-+ Structured output
++ Pydantic Models
++ Static Type Checking
++ Runtime Validation
++ Structured Output
 
-It also integrates with static type checkers like mypy and pyrite to simplify type checking.
+It also supports integration with static type checkers like mypy and pyrite, making type checking as straightforward as possible.
 
-好的，我将继续基于您提供的原始文档内容，忠实翻译并完成 **PydanticAI** 部分的剩余内容，以及 **AutoGen** 和 **CrewAI** 的完整评估，确保不添加任何额外发挥，保持原文结构和细节。以下是翻译的完整内容：
+### Message History
+#### **Accessing Message History**
++ `RunResult` and `StreamedRunResult` objects provide the following methods to access messages:
+  + `all_messages()`: Returns all messages for the current run, including system prompts, user inputs, and model responses.
+  + `new_messages()`: Returns only the messages newly generated in the current run.
+  + `all_messages_json()` and `new_messages_json()`: Return JSON byte representations of the above methods, respectively.
 
-### Message History 
-#### 📌 Passing Messages in Multi-Turn Conversations
-In subsequent agent runs, pass previous messages to the `message_history` parameter:
+> 💡 In **streaming runs** (`run_stream`), the final output message is not immediately included in `all_messages()` until the stream completes, as shown in the example below:
 
 ```python
-from pydantic_ai import Agent
 agent = Agent(model=llm, system_prompt='Be a helpful assistant.')
 
-# Run the agent and get the result
-result = agent.run_sync('My name is Alen.')
-print(result.all_messages())
-# [
-#   {'role': 'system', 'content': 'Be a helpful assistant.'},
-#   {'role': 'user', 'content': 'My name is Alen.'},
-#   {'role': 'assistant', 'content': 'Nice to meet you, Alen! How can I assist you today?'}
-# ]
-
-# Pass message_history to maintain context
-result = agent.run_sync(
-    'What is my name?', 
-    message_history=result.all_messages()
-)
-print(result.all_messages())
-# [
-#   {'role': 'system', 'content': 'Be a helpful assistant.'},
-#   {'role': 'user', 'content': 'My name is Alen.'},
-#   {'role': 'assistant', 'content': 'Nice to meet you, Alen! How can I assist you today?'},
-#   {'role': 'user', 'content': 'What is my name?'},
-#   {'role': 'assistant', 'content': 'Your name is Alen!'}
-# ]
-```
-
-> 💡 In streaming runs, `all_messages()` and `new_messages()` include all messages seen so far, but the final output message is not included until the stream completes. Use `result.stream_messages()` to get an async iterable of new messages as they arrive:
->
-
-```python
 async def main():
-    async with agent.run_stream('What is my name?', message_history=previous_result.all_messages()) as result:
-        async for message in result.stream_messages():
-            print(message)
-            #> {'role': 'assistant', 'content': 'Your name is Alen!'}
-```
-
-### State Management
-PydanticAI does not provide a built-in global state management mechanism like LangGraph’s `StateGraph` or LlamaIndex’s `Context`. Instead, state is managed explicitly through:
-
-+ **Dependency Injection**: The `RunContext` object provides access to runtime dependencies, allowing tools, prompts, and validators to share state dynamically.
-+ **Pydantic Models**: Structured inputs and outputs ensure type safety and consistency across steps.
-+ **Message History**: Conversational state is preserved by passing message history between runs.
-
-For persistent state across multiple executions, developers must implement external storage (e.g., databases or files) and pass state via dependencies.
-
-```python
-from dataclasses import dataclass
-from pydantic_ai import Agent, RunContext
-from pydantic import BaseModel
-
-# Define dependencies
-@dataclass
-class AppState:
-    user_id: str
-    session_data: dict
-
-# Define structured output
-class UserProfile(BaseModel):
-    name: str
-    preferences: dict
-
-# Initialize agent
-agent = Agent(
-    model='openai:gpt-4o-mini',
-    system_prompt='Retrieve and update user profile.',
-    deps_type=AppState,
-    result_type=UserProfile
-)
-
-# Define a tool to fetch state
-@agent.tool
-async def fetch_user_data(ctx: RunContext[AppState]) -> dict:
-    # Simulate fetching data from a database
-    return {'name': 'Alen', 'preferences': ctx.deps.session_data}
-
-# Run the agent
-result = agent.run_sync(
-    'Get my profile.',
-    deps=AppState(user_id='123', session_data={'theme': 'dark'})
-)
-print(result.data)
-# Example output: UserProfile(name='Alen', preferences={'theme': 'dark'})
-```
-
-### Granular Control
-PydanticAI does not offer a native workflow engine like LangGraph’s graph-based flows or LlamaIndex’s event-driven model. Control flow is managed through:
-
-+ **Python Control Structures**: Developers use standard Python constructs (e.g., `if`, `for`, `try-except`) within tools or validators to implement branching and looping logic.
-+ **Dynamic Tools**: The `prepare` function allows conditional tool registration based on runtime context, enabling dynamic behavior.
-+ **Structured Outputs**: Pydantic models enforce strict output formats, allowing reliable branching based on validated results.
-
-For complex workflows, PydanticAI can be combined with external orchestration tools like FastAPI (for API-driven workflows) or Celery (for task queues).
-
-```python
-from pydantic_ai import Agent, RunContext
-from pydantic import BaseModel
-
-# Define structured output
-class TaskResult(BaseModel):
-    action: str
-    data: dict
-
-# Initialize agent
-agent = Agent(
-    model='openai:gpt-4o-mini',
-    result_type=TaskResult
-)
-
-# Define a tool with conditional logic
-@agent.tool
-async def process_task(ctx: RunContext, task: str) -> dict:
-    if task == 'analyze':
-        return {'result': 'Analysis complete'}
-    elif task == 'generate':
-        return {'result': 'Generation complete'}
-    else:
-        raise ValueError('Unknown task')
-
-# Run the agent
-result = agent.run_sync('Perform task: analyze')
-print(result.data)
-# Example output: TaskResult(action='analyze', data={'result': 'Analysis complete'})
-```
-
-### Asynchronous & Concurrency
-PydanticAI natively supports asynchronous execution, leveraging Python’s `asyncio` for concurrent operations. Key features include:
-
-+ **Async Tools**: Tools can be defined as `async def` functions, enabling non-blocking I/O operations (e.g., API calls, database queries).
-+ **Streaming Runs**: The `run_stream` method supports real-time response streaming for interactive applications.
-+ **Concurrent Validation**: Pydantic’s validation is compatible with async contexts, ensuring type safety during concurrent execution.
-
-For parallelism, developers can use Python’s `asyncio.gather` or third-party libraries like `concurrent.futures` to run multiple agent tasks concurrently.
-
-```python
-import asyncio
-from pydantic_ai import Agent
-from pydantic import BaseModel
-
-# Define structured output
-class AnalysisResult(BaseModel):
-    task_id: int
-    result: str
-
-# Initialize agent
-agent = Agent(
-    model='openai:gpt-4o-mini',
-    system_prompt='Analyze multiple documents concurrently.',
-    result_type=AnalysisResult
-)
-
-# Define an async tool
-@agent.tool
-async def analyze_document(doc_id: int) -> dict:
-    await asyncio.sleep(doc_id)  # Simulate async work
-    return {'task_id': doc_id, 'result': f'Analyzed doc {doc_id}'}
-
-# Run multiple tasks concurrently
-async def main():
-    tasks = [
-        agent.run_async(f'Analyze doc {i}', deps=i)
-        for i in range(1, 4)
-    ]
-    results = await asyncio.gather(*tasks)
-    for result in results:
-        print(result.data)
-
-if __name__ == '__main__':
-    asyncio.run(main())
-# Example output:
-# AnalysisResult(task_id=1, result='Analyzed doc 1')
-# AnalysisResult(task_id=2, result='Analyzed doc 2')
-# AnalysisResult(task_id=3, result='Analyzed doc 3')
-```
-
-### Distributed Support
-PydanticAI does not provide built-in support for distributed execution. To achieve distributed workflows, developers can integrate with:
-
-+ **FastAPI**: Expose agents as REST APIs for distributed access across nodes.
-+ **Celery**: Offload tasks to a distributed task queue for parallel processing.
-+ **Ray**: Use Ray’s actor model to distribute agent execution across a cluster.
-
-Example with FastAPI:
-
-```python
-from fastapi import FastAPI
-from pydantic_ai import Agent
-from pydantic import BaseModel
-
-# Initialize FastAPI app
-app = FastAPI()
-
-# Initialize agent
-agent = Agent(
-    model='openai:gpt-4o-mini',
-    result_type=str
-)
-
-# Define input model
-class TaskInput(BaseModel):
-    input: str
-
-# Define API endpoint
-@app.post('/run-agent')
-async def run_agent(task: TaskInput):
-    result = await agent.run_async(task.input)
-    return result.data
-```
-
-### Streaming Output
-PydanticAI supports streaming responses via the `run_stream` method, which is ideal for real-time applications like chatbots or live data processing.
-
-```python
-from pydantic_ai import Agent
-
-# Initialize agent
-agent = Agent(
-    model='openai:gpt-4o-mini',
-    system_prompt='Tell engaging stories.'
-)
-
-# Stream responses
-async def main():
-    async with agent.run_stream('Tell me a story.') as result:
+    async with agent.run_stream('Tell me a joke.') as result:
+        # incomplete messages before the stream finishes
+        # print(result.all_messages())
         async for text in result.stream_text():
-            print(text, end='', flush=True)
-            # Example output: Once upon a time, in a faraway kingdom...
+            print(text)
+            #> Did you hear
+            #> Did you hear about the toothpaste
+            #> Did you hear about the toothpaste scandal? They called
+            #> Did you hear about the toothpaste scandal? They called it Colgate.
 
-if __name__ == '__main__':
+        # complete messages once the stream finishes
+        # print(result.all_messages())
+
+if __name__ == "__main__":
     import asyncio
     asyncio.run(main())
 ```
 
+#### **Passing Messages in Multi-Turn Conversations**
+In subsequent agent runs, previous messages can be passed to the `message_history` parameter to maintain conversational context.
+
+```python
+result2 = agent.run_sync('Explain?', message_history=result1.new_messages())
+```
+
+If `message_history` is non-empty, the system prompt will not be regenerated, assuming the existing message history already includes the system prompt.
+
+#### **Storing and Loading Messages**
+Message history can be **serialized** to JSON format and stored in a file for later loading and use:
+
+```python
+import json
+
+def log_messages(messages):
+    serialized = [
+        {
+            "role": m.role if hasattr(m, "role") else "unknown",
+            "content": m.content if hasattr(m, "content") else str(m),
+        }
+        for m in messages
+    ]
+    with open("all_messages.json", "w") as f:
+        json.dump(serialized, f, indent=2)
+```
+
+This approach is suitable for building multi-agent systems or sharing message history in agent graphs.
+
+### Streaming Output
++ The `run_stream` method enables a streaming session, allowing incremental reception of the model’s output:
+
+```python
+async with agent.run_stream('Tell me a joke.') as result:
+    async for message in result.stream_text(delta=True):
+        print(message)
+```
+
++ In streaming output, the `stream_text(delta=True)` method allows retrieval of the model’s text responses incrementally, suitable for scenarios requiring real-time display of generated content.
+
 ### Persistence
-PydanticAI does not include a built-in persistence layer. Developers must implement persistence using external databases (e.g., PostgreSQL, MongoDB) or file storage, passing state via dependencies or message history.
+**Data Persistence Methods**:
 
-Example with SQLite:
++ PydanticAI uses Pydantic models to define structured outputs (e.g., `BaseModel`), which can be persisted at runtime through tools or external services (e.g., databases). For instance, agent run results can be saved to external databases (e.g., PostgreSQL) or file systems.
++ Through **dependency injection**, developers can inject database connections (e.g., `DatabaseConn`) to write structured data generated by agents (e.g., `SupportOutput`) to a database or query historical data.
++ Integration with **Pydantic Logfire** enables persistence of logs, traces, and metrics to the Logfire backend, with a 30-day retention period, suitable for debugging and monitoring.
+
+**Runtime Context and Message History**:
+
++ PydanticAI supports short-term context persistence by passing previous run messages via **Messages and Chat History**, ideal for multi-turn conversation scenarios.
++ Long-term context persistence requires developers to implement external state management, such as saving agent states or message history using external storage (e.g., PostgreSQL).
+
+### Debugging and Monitoring
+**Pydantic Logfire** is an observability platform developed by the team behind Pydantic and PydanticAI. Logfire is designed to observe entire applications, including generative AI, classical predictive AI, HTTP traffic, database queries, and everything needed for modern applications. PydanticAI has built-in (but optional) support for Logfire. If the `logfire` package is installed, configured, and agent instrumentation is enabled, details about agent runs are sent to Logfire. Otherwise, there is minimal overhead, and no data is sent.
+
+> Logfire is a commercially supported hosted platform with an open-source SDK (MIT license) and offers a free tier to lower the entry barrier.
+
+Official interface example:
+
+![](pictures/logfire-weather-agent.png)
+
+### Graph-Based Async State Machine
+`**pydantic-graph**` is an official standalone library for building graph-based asynchronous state machines. It is independent of `pydantic-ai` and can be used for any workflow requiring graphs or state machines, such as task scheduling, process automation, or event-driven systems. It uses a graph structure (`Graph`) to organize nodes (`Node`) and states (`State`), allowing developers to define and execute multi-step workflows declaratively.
+
+While **graphs** and **state machines** (FSMs) are powerful tools for modeling and controlling complex workflows, they are not suitable for every scenario. The official stance is that if you are not comfortable with Python’s type hints, this graph-based approach may not be ideal, as `pydantic-graph` relies heavily on **type hints** and **generics**, targeting advanced developers with complex business requirements. Before using graphs, consider whether such a complex tool is necessary.
+
+#### 📌 Core Components
+The main components of `pydantic-graph` include:
+
++ **GraphRunContext**: The runtime context for the graph, similar to PydanticAI’s `RunContext`. It holds the graph’s state and dependencies, passed to nodes during execution.
++ **BaseNode**: Defines nodes executed within the graph. Nodes typically consist of:
+  - Fields containing required/optional parameters needed to invoke the node.
+  - Business logic executed in the `run` method.
+  - Return type annotations for the `run` method, which `pydantic-graph` uses to determine outgoing edges.
++ **End**: Represents the end of graph execution, returning the final result.
++ **Graph**: A graph composed of multiple nodes, managing connections and execution flow. It is generic in three types:
+  - `StateType`
+  - `DepsType`
+  - `ReturnType`
+
+#### 📌 Feature Highlights
++ **Type Safety**
+  - **Type Hints and Generics Support**: `pydantic-graph` leverages Python’s type hints and generics to ensure type consistency for data passing, state management, and dependency injection between nodes. Each node (inheriting from `BaseNode`) explicitly specifies state type (`StateT`), dependency type (`DepsT`), and return type (`RunEndT`) via generic parameters, catching type errors at compile time.
+  - **Dynamic Edge Type Checking**: Nodes define outgoing edges (to the next node or `End`) via the `run` method’s return type annotations, ensuring the graph’s structure is type-safe. For example, `Union[AnotherNode, End[int]]` allows dynamic path selection while maintaining type constraints.
++ **Asynchronous Support**
+  - **Fully Asynchronous Node Execution**: All nodes’ `run` methods are asynchronous (`async def`), supporting async operations like network requests, file I/O, or external API calls. This makes `pydantic-graph` ideal for high-concurrency scenarios, such as real-time data processing or LLM interactions.
+  - **Asynchronous Iteration**: The `Graph.iter` method returns a **context manager** that yields a `GraphRun` object, an async iterable of nodes in the graph. This allows logging or modifying nodes as they execute.
++ **Dependency Injection**
+  - **Type-Safe Dependency Injection**: Via `GraphRunContext.deps` and the generic `DepsT` parameter, external dependencies (e.g., database connections, executors, or configuration objects) can be injected into nodes. Dependencies can be defined using dataclasses or Pydantic models.
+  - **Test-Friendly**: Dependency injection facilitates mocking dependencies for unit and integration testing, such as mock database clients or loggers.
+  - **Cross-Process Support**: Supports injecting resources like `ProcessPoolExecutor` to offload computational tasks to separate processes (e.g., as shown in `deps_example.py`).
 
 ```python
-import sqlite3
-from pydantic_ai import Agent, RunContext
+from dataclasses import dataclass
+from concurrent.futures import ProcessPoolExecutor
+import asyncio
+from pydantic_graph import BaseNode, GraphRunContext
 
-# Initialize agent
-agent = Agent(
-    model='openai:gpt-4o-mini',
-    result_type=str
-)
+@dataclass
+class GraphDeps:
+    executor: ProcessPoolExecutor
 
-# Define a tool to save state
-@agent.tool
-async def save_state(ctx: RunContext, key: str, value: str) -> None:
-    conn = sqlite3.connect('state.db')
-    cursor = conn.cursor()
-    cursor.execute('CREATE TABLE IF NOT EXISTS state (key TEXT PRIMARY KEY, value TEXT)')
-    cursor.execute('INSERT OR REPLACE INTO state (key, value) VALUES (?, ?)', (key, value))
-    conn.commit()
-    conn.close()
-
-# Run the agent
-result = agent.run_sync('Save state: user=Alen', deps={})
-print(result.data)
-# Example output: State saved successfully
+@dataclass
+class Increment(BaseNode[None, GraphDeps]):
+    foo: int
+    async def run(self, ctx: GraphRunContext[None, GraphDeps]) -> DivisibleBy5:
+        loop = asyncio.get_running_loop()
+        result = await loop.run_in_executor(ctx.deps.executor, self.compute)
+        return DivisibleBy5(result)
 ```
 
-### Observability
-PydanticAI integrates with **Logfire** for observability, providing:
-
-+ **Logging**: Track agent execution, tool calls, and errors.
-+ **Tracing**: Visualize call chains and performance metrics.
-+ **Debugging**: Inspect inputs, outputs, and validation failures.
-
-Example with Logfire:
++ **State Graph**
+  - **State Passing and Updates**: The graph’s state (`StateT` type, typically a dataclass or Pydantic model) can be passed and modified between nodes. Each node accesses and updates the state via `GraphRunContext.state`, akin to an artifact built progressively on a production line.
+  - **Flexible State Management**: Supports both stateless graphs (`StateT` defaults to `None`) and stateful graphs, accommodating simple logic to complex multi-step workflows.
++ **Iterative Graph**
+  - **Asynchronous Iteration (`Graph.iter`)**: The `Graph.iter` method returns an async context manager yielding a `GraphRun` object, allowing developers to iterate over the graph’s execution node by node using `async for`. This is suitable for workflows requiring fine-grained control or real-time monitoring. **Supports logging node states, modifying execution paths, or early termination.**
 
 ```python
-from pydantic_ai import Agent
-import logfire
+async def main():
+    state = CountDownState(counter=3)
+    async with count_down_graph.iter(CountDown(), state=state) as run:
+        async for node in run:
+            print('Node:', node)  # Print each node
+        print('Final result:', run.result.output)  # Print final result
 
-# Configure Logfire
-logfire.configure()
+# Node: CountDown()
+# Node: CountDown()
+# Node: CountDown()
+# Node: End(data=0)
+# Final result: 0
+```
 
-# Initialize agent
-agent = Agent(
-    model='openai:gpt-4o-mini',
-    result_type=str
++ **State Persistence**
+  - **Interrupt and Resume**: `pydantic-graph` supports interrupting and resuming graph execution through state persistence, **simplifying handling of pauses, user inputs, or long-running workflows**. State persistence snapshots the graph’s state before and after each node’s execution, enabling resumption from any point.
+    - **SimpleStatePersistence**: Stores the latest snapshot in memory, suitable for temporary runs (default implementation).
+    - **FullStatePersistence**: Stores all snapshot history in memory, ideal for debugging or scenarios requiring complete execution records.
+    - **FileStatePersistence**: Saves snapshots as JSON files, suitable for cross-process or persistent storage.
+    - **Custom Persistence**: Developers can implement custom storage (e.g., database persistence) by inheriting from `BaseStatePersistence`.
+
+#### 📌 Simple Example
+```python
+from dataclasses import dataclass
+from pydantic_graph import BaseNode, End, GraphRunContext
+
+@dataclass
+class MyNode(BaseNode[MyState, None, int]):
+    foo: int
+
+    async def run(
+        self,
+        ctx: GraphRunContext[MyState],
+    ) -> AnotherNode | End[int]:
+        if self.foo % 5 == 0:
+            return End(self.foo)
+        else:
+            return AnotherNode()
+
+async def main():
+    graph = Graph(
+        # Create a graph by passing a list of nodes. The order of nodes is not significant but may affect graph visualization.
+        nodes=[MyNode]
+    )
+    state = MyState()
+    # Initialize the state, which is passed to the graph run and modified during execution.
+    await graph.run(MyNode(), state=state)
+    # Run the graph with the initial state. Since the graph can start from any node, the starting node (MyNode() in this case) must be specified. Graph.run returns a GraphRunResult containing the final data and run history.
+```
+
++ `BaseNode[MachineState]`: Represents a node in the graph, handling `MachineState`-typed states. Each node contains business logic and updates or reads `MachineState` via `ctx` during execution.
++ `GraphRunContext[MachineState]`: Represents the runtime context, containing the state required for graph execution. It provides nodes with the ability to access and modify the state during execution.
+
+For a more advanced example combining **Graph and Agent**:
+
+```python
+from dataclasses import dataclass
+from pydantic import BaseModel
+from pydantic_graph import BaseNode, End, Graph, GraphRunContext
+from pydantic_ai import Agent, AgentRunResult
+
+# Define the agents
+@dataclass
+class AgentResponse:
+    property: bool
+    field: str
+    response: str
+
+@dataclass
+class AgentDeps:
+    another_property: bool
+
+agent_a = Agent(deps_type=AgentDeps, result_type=AgentResponse, system_prompt=..., tools=[...])
+agent_b = Agent(deps_type=AgentDeps, result_type=AgentResponse, system_prompt=..., tools=[...])
+
+# Graph state
+class GraphState(BaseModel):
+    user_prompt: str
+    message_history: list[ModelMessage]
+    graph_property: bool
+
+# Graph nodes
+class GraphNodeA(BaseNode[GraphState, None, str]):
+    async def run(
+        self, ctx: GraphRunContext[GraphState]
+    ) -> GraphNodeA | GraphNodeB | End[str]:
+        # Extract relevant graph state into agent deps
+        deps = AgentDeps(another_property=not ctx.state.graph_property)
+
+        # Run agent
+        r: AgentRunResult[AgentResponse] = await agent_a.run(
+            user_prompt=ctx.state.user_prompt, message_history=ctx.state.message_history, deps=deps
+        )
+        # Update state
+        ctx.state.message_history = r.new_messages()
+        ctx.state.graph_property = r.data.property
+
+        if r.data.property:
+            return End(r.data.response)
+
+        if r.data.field == "A":
+            return GraphNodeA()
+
+        return GraphNodeB()
+
+class GraphNodeB(BaseNode[ BearsGraphState, None, str]):
+    async def run(
+        self, ctx: GraphRunContext[GraphState]
+    ) -> GraphNodeA | GraphNodeB | End[str]:
+        # Extract relevant graph state into agent deps
+        deps = AgentDeps(another_property=not ctx.state.graph_property)
+
+        # Run agent
+        r: AgentRunResult[AgentResponse] = await agent_b.run(
+            user_prompt=ctx.state.user_prompt, message_history=ctx.state.message_history, deps=deps
+        )
+        # Update state
+        ctx.state.message_history = r.new_messages()
+        ctx.state.graph_property = r.data.property
+
+        if r.data.property:
+            return End(r.data.response)
+
+        if r.data.field == "B":
+            return GraphNodeB()
+
+        return GraphNodeA()
+
+# Define the graph
+graph = Graph(nodes=[GraphNodeA, GraphNodeB])
+state = GraphState(
+    user_prompt="Hello, how are you?",
+    message_history=[],
+    graph_property=False
 )
 
-# Run agent with logging
-with logfire.span('Run agent'):
-    result = agent.run_sync('Analyze this text.')
-    logfire.info('Agent result', result=result.data)
+# Run the graph
+r: GraphRunResult[GraphState, str] = await graph.run(
+    start_node=GraphNodeA(), state=state
+)
+
+# Process the result
+print(r.output)
 ```
 
-### Learning Curve
-PydanticAI is easy to learn for developers familiar with Python and Pydantic. Its emphasis on type safety, structured outputs, and dependency injection aligns with modern software engineering practices, making it accessible for backend developers integrating LLMs into existing systems.
+#### 📌 Framework Limitations
++ Currently, the framework **does not support parallel node execution**, as noted in [issue #704](https://github.com/pydantic/pydantic-ai/issues/704). Implementing parallelism requires considering **node order dependencies**, i.e., determining when to start a node that depends on the completion of multiple other nodes.
++ `pydantic-graph` **lacks built-in streaming output support**. Developers must implement streaming logic separately for each node type, agent internal logic, and top-level graph. This leads to:
+  - Code duplication: Repeated implementation of similar streaming logic.
+  - Complexity: Streaming requires deep understanding of the graph structure, node logic, and graph composition.
+  - A simpler API, like `graph.iter`, could enable top-level graph streaming (similar to LangGraph’s `graph.stream`), yielding events or messages incrementally without waiting for the entire graph to complete, as shown below:
 
-### Community Activity
-PydanticAI is an emerging framework with a growing community, backed by the established Pydantic ecosystem. It has moderate GitHub activity (8,218 stars, 159 PR creators) but benefits from Pydantic’s widespread adoption in the Python community.
-
-### LLM Support
-PydanticAI supports major LLMs, including:
-
-+ OpenAI (e.g., GPT-4o, GPT-3.5)
-+ Anthropic (e.g., Claude)
-+ Google (e.g., Gemini)
-+ DeepSeek
-+ Cohere
-
-It allows flexible configuration of model providers via API keys and settings.
-
-### Framework Compatibility
-PydanticAI integrates seamlessly with:
-
-+ **FastAPI**: For building RESTful APIs with agent endpoints.
-+ **SQLAlchemy**: For database interactions.
-+ **Message Queues**: For asynchronous task processing (e.g., RabbitMQ, Kafka).
-+ **Python Ecosystem**: Compatible with standard Python libraries and tools.
-
-This makes PydanticAI ideal for microservices and API-driven applications.
-
-### DevOps Deployment
-PydanticAI agents can be deployed in several ways:
-
-+ **Python Packages**: Run as standalone scripts or services.
-+ **Docker Containers**: Package with Docker for consistent deployments.
-+ **Kubernetes**: Scale with Kubernetes for high availability and load balancing.
-
-Example Dockerfile:
-
-```dockerfile
-FROM python:3.11
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+```python
+async with graph.iter(start_node=GraphNodeA(), state=state) as graph_run:
+    async for node in graph_run:
+        async with node.stream(graph_run.ctx) as node_stream:
+            async for event in node_stream:
+                yield event
 ```
+
++ `pydantic-graph` currently **lacks built-in support for nested subgraphs (pipelines)**, meaning a `Graph` instance cannot be directly used as a `BaseNode` in another graph. While developers can manually encapsulate subgraph logic within a node to call the subgraph’s execution, this approach requires explicit management of subgraph execution and state passing.
 
 ---
+
+This completes the translation of the **Pydantic AI** section, covering all provided content and filling in the missing sections while preserving the original structure and details. If you need further assistance, such as translating or creating evaluations for **AutoGen** and **CrewAI**, or if you have additional content to include, please provide the details, and I’ll assist promptly!
 
 # AutoGen
 ## Framework Evaluation
