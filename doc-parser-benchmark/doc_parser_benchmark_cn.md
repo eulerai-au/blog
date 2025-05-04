@@ -57,11 +57,24 @@
 - 在部署方面，使用 olmOCR 需要配备至少 20GB 显存的较新款 NVIDIA GPU（如 RTX 4090、L40S、A100、H100）及 30GB 磁盘空间。
 - 在 License 方面，olmOCR 使用 Apache 2.0 协议授权。
 
+### 1.6 总结
+
+下表简要总结了上述文档解析工具支持的格式和 License：
+
+| 工具名称           | 支持格式                                                          | License                                       |
+| -------------- | ------------------------------------------------------------- | --------------------------------------------- |
+| **MinerU**     | PDF（magic-pdf）；PPT、PPTX、DOC、DOCX、PDF（magic-doc）               | AGPL-3.0（依赖 PyMuPDF）                          |
+| **Marker**     | PDF、图像、PPTX、DOCX、XLSX、HTML、EPUB                               | GPL-3.0（模型权重默认 CC-BY-NC-SA-4.0，特定条件下可豁免非商业限制） |
+| **Docling**    | PDF、DOCX、XLSX、PPTX、Markdown、AsciiDoc、HTML、XHTML、CSV、图像、USPTO XML、JATS XML、Docling JSON           | MIT                                           |
+| **MarkItDown** | PDF、PPT、Word、Excel、图像、音频、HTML、CSV、JSON、XML、ZIP、YouTube 链接、EPUB | MIT                                           |
+| **olmOCR**     | PDF、图像                                                        | Apache 2.0                                    |
+
+
 ## 2 文档解析工具性能评测
 
 ### 2.1 MinerU、Marker、Docling、MarkItDown 简单对比
 
-部署环境为 macOS Sequoia 15.3.2，对一个 9 页的 pdf 文档进行简单测试对比：
+部署环境为 macOS Sequoia 15.3.2，分别对一份 9 页的英文 pdf 文档和一份 11 页的中文 pdf 文档进行简单测试对比：
 
 1. MinerU
     - 安装 MinerU：
@@ -78,11 +91,16 @@
         python download_models.py
         ```
         
-    - 对 pdf 文档进行转换，得到 jpeg 格式的图片、转换后的 Markdown 格式文件、json 文件，以及其他标记文件，共耗时 2 分 23.92 秒：
+    - 对 pdf 文档进行转换，得到 jpeg 格式的图片、转换后的 Markdown 格式文件、json 文件，以及其他标记文件，英文文档共耗时 2 分 23.92 秒，中文文档耗时 2 分 27.70 秒：
         
         ```bash
         magic-pdf -p docs/test.pdf -o data/mineru_output/ -m auto
         ```
+    - 英文文档解析部分结果对比：
+        ![marker.png](pictures/mineru.png)
+    - 中文文档解析部分结果对比：
+        ![mineru_cn.png](pictures/mineru_cn.png)
+        ![mineru_cn2.png](pictures/mineru_cn2.png)
         
     
 2. Marker
@@ -92,11 +110,16 @@
         pip install marker-pdf[full]
         ```
         
-    - 转换同样的 pdf 文件，得到 jpeg 格式的图片和转换后的 Markdown 格式文件，耗时 20.609 秒：
+    - 转换同样的 pdf 文件，得到 jpeg 格式的图片和转换后的 Markdown 格式文件，英文文档耗时 20.609 秒，中文文档耗时 16.667 秒：
         
         ```bash
         marker_single docs/test.pdf --output_dir data/marker_output
         ```
+    - 英文文档解析部分结果对比：
+        ![marker.png](pictures/marker.png)
+    - 中文文档解析部分结果对比：
+        ![marker_cn.png](pictures/marker_cn.png)
+        ![marker_cn2.png](pictures/marker_cn2.png)
         
 3. Docling
     - 安装 Docling：
@@ -105,11 +128,16 @@
         pip install docling
         ```
         
-    - 对同样的 pdf 文件进行处理，得到转换后的 Markdown 格式文件，耗时 21.407 秒：
+    - 对同样的 pdf 文件进行处理，得到转换后的 Markdown 格式文件，英文文档耗时 21.407 秒，中文文档耗时 18.546 秒：
         
         ```bash
         docling docs/test.pdf --output data/docling_output
         ```
+    - 英文文档解析部分结果对比：
+        ![docling.png](pictures/docling.png)
+    - 中文文档解析部分结果对比：
+        ![docling_cn.png](pictures/docling_cn.png)
+        ![docling_cn2.png](pictures/docling_cn2.png)
         
 4. MarkItDown
     - 安装 MarkItDown：
@@ -118,17 +146,22 @@
         pip install markitdown
         ```
         
-    - 对同样的 pdf 文件进行处理，得到转换后的 Markdown 格式文件（只保留了文字），耗时 0.886 秒：
+    - 对同样的 pdf 文件进行处理，得到转换后的 Markdown 格式文件（只保留了文字），英文文档耗时 0.886 秒，中文文档耗时 3.789 秒：
         
         ```bash
         markitdown docs/test.pdf > data/markitdown_output/document.md
         ```
-        
+    - 英文文档解析部分结果对比：
+        ![markitdown.png](pictures/markitdown.png)
+    - 中文文档解析部分结果对比：
+        ![markitdown_cn.png](pictures/markitdown_cn.png)
+
 
 上述用例的测试结果总结如下：
 
 - 尽管 MarkItDown 处理的最快，它的识别效果是最差的，尤其是对于图片、表格和公式，此外 MarkItDown 提取出的内容布局混乱，不适合人类阅读。
-- 就测试用例而言，MinerU 和 Marker 的处理结果略优于 Docling。MinerU 的识别精度更高，但存在部分乱码，且耗时较长。Marker 在保证一定输出质量的同时处理速度更快。
+- 仅以这两个测试用例的结果来看，MinerU 与 Marker 的表现相近。在输出表格的布局上，Marker 要略优于 MinerU。Docling 则难以处理复杂的表格（例如对中文文档中第二个表格的处理）。
+- 从运行时间上看，MinerU 耗时最长，Marker 在保证一定输出质量的同时处理速度更快。
 
 ### 2.2 基于 OmniDocBench 的深度测评
 
@@ -256,6 +289,6 @@
 ## 3 文档解析工具选型建议
 
 - **学术文档（重公式）**：优先 MinerU、OLMOCR。
-- **商业报表（重表格）**：优选 MinerU，对处理速度有较高的要求可考虑 Marker。
-- **多语言混合文档**：OLMOCR 配合 MinerU 文本提取。
+- **商业报表（重表格）**：优选 MinerU、Marker，对处理速度有较高的要求则选择 Marker。
+- **多语言混合文档** olmOCR 配合 MinerU 文本提取。
 - **中文特化场景**：当前无完美工具，可以考虑 MinerU + 后处理。
