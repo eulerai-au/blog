@@ -17,5 +17,5 @@ To maintain the blog posts of Euler AI.
 ### Document Parsing Tools
 - [2025/04/29] Open-Source Document Parsing Tools Evaluation. [EN](doc-parser-benchmark/doc_parser_benchmark_en.md) / [Zh-CN](doc-parser-benchmark/doc_parser_benchmark_cn.md)
 
-### agent_framework
+### Agent Framework
 - [2025/04/30] Open-Source AI Agent Framework Evaluation. [EN](agent_framework/agent_framework_report_en.md) / [Zh-CN](agent_framework/agent_framework_report_zh.md)
