@@ -269,30 +269,8 @@ Query capabilities determine the flexibility and efficiency of extracting and an
 
 ---
 
-## License Type Comparison
+## Deployment 
 
-- **SurrealDB**: Core code uses **Apache 2.0**, commercial hosting services require payment (e.g., Surreal Cloud's Start/Scale plans).
-- **PostgreSQL**: **PostgreSQL License** (similar to BSD/MIT), no commercial restrictions.
-- **MongoDB**: Community Edition uses **SSPL** (Server Side Public License), commercial version requires subscription.
-- **Redis**: Core code uses **BSD 3-Clause**, some Redis Modules features require commercial licensing.
-- **SQLite**: **Public Domain**, no usage restrictions.
-- **TiKV**: **Apache 2.0**, commercial support provided by PingCAP.
-
----
-
-## Comprehensive Recommendations
-
-Based on user requirements (multi-model data, scalability, vector storage, etc.), priority recommendations are:
-1. **PostgreSQL**: Comprehensive functionality, strong extensibility, suitable for enterprises requiring stable, mature solutions.
-2. **SurrealDB**: Distinct advantages in multi-model and real-time queries, suitable for innovative projects.
-3. **MongoDB**: Excellent document processing, mature ecosystem.
-4. **TiKV**: First choice for ultra-large-scale distributed scenarios.
-5. **Redis**: Suitable for high-frequency read/write scenarios like caching/sessions.
-6. **SQLite**: Only recommended for embedded or small applications.
-
-## Practice
-
-The testing environment is Ubuntu 24.04. All deployment methods are relatively simple.
 
 ### **1. Installing SurrealDB**
    ```bash
@@ -387,9 +365,24 @@ The testing environment is Ubuntu 24.04. All deployment methods are relatively s
 
 ---
 
-### Target Data Compatibility Analysis
+## License Type Comparison
+
+- **SurrealDB**: Core code uses **Apache 2.0**, commercial hosting services require payment (e.g., Surreal Cloud's Start/Scale plans).
+- **PostgreSQL**: **PostgreSQL License** (similar to BSD/MIT), no commercial restrictions.
+- **MongoDB**: Community Edition uses **SSPL** (Server Side Public License), commercial version requires subscription.
+- **Redis**: Core code uses **BSD 3-Clause**, some Redis Modules features require commercial licensing.
+- **SQLite**: **Public Domain**, no usage restrictions.
+- **TiKV**: **Apache 2.0**, commercial support provided by PingCAP.
+
+---
+
+## Practice
+
+The testing environment is Ubuntu 24.04. All deployment methods are relatively simple.
 
 Target data form: Each folder corresponds to a research paper, containing a PDF of the original paper and a set of JSON files extracting relevant information from the article.
+
+### Target Data Compatibility Analysis
 
 - SurrealDB: Supports JSON and structured data, suitable for this dataset.
 - PostgreSQL: Supports JSON and binary data, suitable for this dataset.
@@ -398,7 +391,31 @@ Target data form: Each folder corresponds to a research paper, containing a PDF 
 - SQLite: Can store JSON and binary data but lacks advanced query capabilities for nested structures.
 - TiKV: Key-value storage, not suitable for JSON or complex relationships.
 
+Further comparison of the suitable databases: SurrealDB, PostgreSQL, and MongoDB:
+
+- SurrealDB leans towards using standard web protocols (HTTP and WebSocket), making it more suitable for real-time applications and direct communication between frontend and backend. MongoDB and PostgreSQL support the same local communication methods, but MongoDB defaults to TCP/IP communication.
+- MongoDB requires licensing for commercial use, whereas PostgreSQL has no commercial restrictions.
+- In terms of functionality, both can meet the requirements.
+
+### Performance Evaluation:
+
 The databases that actually participated in testing were SurrealDB, PostgreSQL, and MongoDB.
+
+<!-- Total write time for SurrealDB: 0.9940774440765381 seconds
+Total read time for SurrealDB: 0.013937950134277344 seconds
+
+Total write time for MongoDB: 1.087291955947876 seconds
+Total read time for MongoDB: 0.004241466522216797 seconds
+
+Total write time for PostgreSQL: 0.09826374053955078 seconds
+Total read time for PostgreSQL: 0.005629062652587891 seconds -->
+
+| Database       | Write Time (seconds) | Read Time (seconds) |
+|----------------|-----------------------|----------------------|
+| SurrealDB      | 0.9940774440765381    | 0.013937950134277344 |
+| MongoDB        | 1.087291955947876     | 0.004241466522216797 |
+| PostgreSQL     | 0.09826374053955078   | 0.005629062652587891 |
+
 
 *Database schema obtained:*
 
@@ -411,14 +428,3 @@ The databases that actually participated in testing were SurrealDB, PostgreSQL, 
  | public | experiment   | table | postgres |
  | public | paper        | table | postgres |
  | public | solution     | table | postgres |
-
-#### IO Test Results:
-
-Total write time for SurrealDB: 0.9940774440765381 seconds
-Total read time for SurrealDB: 0.013937950134277344 seconds
-
-Total write time for MongoDB: 1.087291955947876 seconds
-Total read time for MongoDB: 0.004241466522216797 seconds
-
-Total write time for PostgreSQL: 0.09826374053955078 seconds
-Total read time for PostgreSQL: 0.005629062652587891 seconds
