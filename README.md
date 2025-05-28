@@ -4,7 +4,7 @@ To maintain the blog posts of Euler AI.
 ## Table of Contents
 
 ### Cloud-Native Intelligent Agent System Deployment Research Report
-- [2025/05/28] Cloud-Native Intelligent Agent System Deployment Research Report: Comprehensive Comparative Analysis of AWS, GCP, Azure, and Alibaba Cloud. [EN](cloud-native-agent/cloud_native_agent_report_en.md) / [Zh-CN](cloud-native-agent/cloud_native_agent_report_cn.md)
+- [2025/05/28] Cloud-Native Intelligent Agent System Deployment Research Report: Comprehensive Comparative Analysis of AWS, GCP, Azure, and Alibaba Cloud. [EN](Deploymentdevops/Deploymentdevops%20en.md) / [Zh-CN](Deploymentdevops/Deploymentdevops%20zh-cn.md)
 
 ### MCP
 - [2025/04/21] Copilot on VSCode Now Natively Supports MCP: A New Era of Intelligent Programming for Developers. [EN](mcp/25_04_21/EN/25_04_21_en.md) / [Zh-CN](mcp/25_04_21/CN/25_04_21.md)
