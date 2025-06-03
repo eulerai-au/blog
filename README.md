@@ -19,3 +19,7 @@ To maintain the blog posts of Euler AI.
 
 ### Agent Framework
 - [2025/04/30] Open-Source AI Agent Framework Evaluation. [EN](agent_framework/agent_framework_report_en.md) / [Zh-CN](agent_framework/agent_framework_report_zh.md)
+
+### Memory Framework
+
+- [2025/06/03] Open-Source AI Memory Framework Evaluation. [EN](memory_framework/memory_framework_report_en.md) / [Zh-CN](memory_framework/memory_framework_report_cn.md)
