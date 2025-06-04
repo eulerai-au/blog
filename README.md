@@ -23,3 +23,7 @@ To maintain the blog posts of Euler AI.
 ### Memory Framework
 
 - [2025/06/03] Open-Source AI Memory Framework Evaluation. [EN](memory_framework/memory_framework_report_en.md) / [Zh-CN](memory_framework/memory_framework_report_cn.md)
+
+### Supabase
+
+- [2025/06/04] Open-Source Supabase Framework Evaluation. [EN](supabase/supabase_en.md) / [Zh-CN](supabase/supabase_cn.md)
