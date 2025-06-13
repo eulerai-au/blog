@@ -1,8 +1,12 @@
-# Preface
+# **How to Choose? In-depth Comparison of Popular AI Agent Frameworks**
 The explosive growth of generative AI has made technology selection a primary challenge for developers. Almost every day, new frameworks, tools, or technologies emerge. Whether you're an individual developer or part of an enterprise team, building innovative applications with large language models (LLMs) raises a critical question: "Which framework is best suited for my use case?" This article provides a deep, practical comparison of five popular AI Agent frameworks—LangGraph, LlamaIndex, PydanticAI, AutoGen, and CrewAI—from a developer's perspective, across multiple dimensions, to serve as a hands-on reference. **Note that this article focuses primarily on evaluating these frameworks' performance in building non-agentic AI workflows.**
 
 ## Why Do We Need LLM Frameworks?
-LLM development frameworks are software platforms designed to simplify the creation, deployment, and management of AI applications (e.g., Agents, Workflows, RAG). These frameworks provide pre-built components, abstracted interfaces, and development tools to help developers efficiently build complex AI systems. Through standardized development paradigms and modular architectures, LLM frameworks allow developers to focus on the unique logic and innovation of their applications without reinventing the wheel. Whether for rapid prototyping or production-grade deployment, choosing the right LLM framework for your use case can significantly reduce development barriers and time costs.
+LLM frameworks are like your intelligent assistants, simplifying the development process of complex AI applications into building blocks. They provide out-of-the-box components, interfaces, and tools, allowing you to quickly build AI systems—such as text generation, data processing, or RAG (Retrieval Augmented Generation) applications—without writing a lot of underlying code from scratch. Whether you want to quickly validate an idea or deploy a production-grade system, choosing the right framework can help you avoid detours and save valuable time.
+
+Essentially, the ultimate goal of **Agent** frameworks is to **let developers focus on innovation rather than reinventing the wheel.** Specifically, the core advantages of frameworks lie in helping you manage **prompt engineering and data routing**, enabling seamless integration between large language models (LLMs) and external tools (like APIs, databases). They lower the development barrier through additional abstraction layers while providing robust functional support, such as structured output, error handling, result validation, observability, and deployment support. More importantly, frameworks help you organize code and easily tackle complex scenarios, like multi-agent collaborative systems.
+![abstraction.png](pictures/abstraction.png)
+However, frameworks are not a panacea. Some developers feel that using a full-fledged framework can be overkill, as **high abstraction layers** can complicate debugging—for instance, when an LLM tool call fails, pinpointing the issue can be like finding a needle in a haystack. Predefined flows and structures can also somewhat limit customization capabilities. When changing models, custom prompts might become incompatible, forcing you to rewrite logic. Conversely, **low-abstraction** frameworks offer greater flexibility and more straightforward debugging but also increase development costs, requiring manual implementation of many features. Therefore, **the true value of a framework lies in balancing ease of use with control, allowing you to find a sweet spot between rapid development and fine-grained debugging.**
 
 ## The Core Value of Workflows
 Workflows are event-driven, step-based methods for controlling the execution flow of applications. As generative AI applications become increasingly complex, managing data flows and controlling application execution becomes more challenging. Workflows break tasks into modular sub-steps, offering greater flexibility and maintainability. This is particularly valuable in scenarios involving multi-agent collaboration or cross-system interactions, significantly improving development efficiency and system robustness.
@@ -149,26 +153,30 @@ class PipelineState(TypedDict):
 def load_pdf(state: PipelineState):
     """Simulate loading a PDF file."""
     pdf_path = state["pdf_path"]
+    # Simulate actual PDF loading and content extraction
     return {"raw_content": f"Simulated raw content from {pdf_path}"}
 
 # Node: Parse document
 def parse_document(state: PipelineState):
     """Simulate parsing the loaded document."""
     raw_content = state["raw_content"]
-    parsed_content = {...}
+    # Simulate document parsing
+    parsed_content = {"metadata": {"title": "AI for Everyone"}, "text_chunks": ["Chunk 1...", "Chunk 2..."]}
     return {"parsed_content": parsed_content}
 
 # Node: Summarize text using LLM
 def summarize_text(state: PipelineState):
     """Simulate summarizing the parsed content via LLM."""
     parsed_content = state["parsed_content"]
-    summarized_text = "Summary: AI applications in various industries."
+    # Simulate LLM summarization
+    summarized_text = "Summary: AI applications in various industries based on parsed chunks."
     return {"summarized_content": summarized_text}
 
 # Node: Persist results into a database
 def persist_to_db(state: PipelineState):
     """Simulate writing summarized content to the database."""
     summarized_content = state["summarized_content"]
+    # Simulate database persistence
     return {"persist_status": "success"}
 
 # Build the workflow graph
@@ -192,7 +200,7 @@ chain = workflow.compile()
 
 # Execute the workflow
 if __name__ == "__main__":
-    init_state = {"pdf_path": "upload/pdf/ai_for_everyone.pdf"}
+    init_state = {"pdf_path": "upload/pdf/ai_for_everyone.pdf", "raw_content": "", "parsed_content": {}, "summarized_content": "", "persist_status": ""}
     final_state = chain.invoke(init_state)
 
     print("--- Pipeline Execution Result ---")
@@ -202,8 +210,8 @@ if __name__ == "__main__":
 # --- Pipeline Execution Result ---
 # pdf_path: upload/pdf/ai_for_everyone.pdf
 # raw_content: Simulated raw content from upload/pdf/ai_for_everyone.pdf
-# parsed_content: {'metadata': {'title': 'AI for Everyone'}, 'text_chunks':{}...}
-# summarized_content: Summary: AI applications in various industries.
+# parsed_content: {'metadata': {'title': 'AI for Everyone'}, 'text_chunks': ['Chunk 1...', 'Chunk 2...']}
+# summarized_content: Summary: AI applications in various industries based on parsed chunks.
 # persist_status: success
 ```
 
@@ -220,40 +228,70 @@ if __name__ == "__main__":
 + If no reducer is specified, updates to a key overwrite it by default. For example, by assigning the `append_chunks` reducer to the `parsed_chunks` field, new text chunks returned by a node are **automatically accumulated** in the current State, eliminating the need for nodes to manually manage merge logic, ensuring **data processing consistency**.
 
 ```python
+from typing_extensions import TypedDict
+from typing import Annotated # Ensure Annotated is imported
+import operator # Ensure operator is imported for operator.add if used, though not in this specific example's reducer
+
+# Define State (ensure it's defined before use, e.g. State or ExtractState)
 class State(TypedDict):
-    parsed_chunks: Annotated[list[str], append_chunks]
+    parsed_chunks: Annotated[list[str], operator.add] # If using operator.add as reducer
+    # Or simply: parsed_chunks: Annotated[list[str], append_chunks] if append_chunks is the reducer
     metadata: dict
 
-def append_chunks(left, right):
+def append_chunks(left: list[str], right: list[str]) -> list[str]: # Explicit type hints
     """Append two lists of parsed text chunks."""
+    if left is None: left = []
+    if right is None: right = []
     return left + right
 
-def parse_document(state:State):
+# Example node updating the state
+def parse_document_node(state: State): # Renamed to avoid conflict
     """Mock parsing a document and returning new chunks."""
+    # Simulate extracting new chunks
     new_chunks = ["This is a new paragraph extracted."]
-    return {"parsed_chunks": new_chunks, "metadata": {"source": "upload/pdf/ai_for_everyone.pdf"}}
+    # Simulate extracting metadata
+    metadata_update = {"source": "upload/pdf/ai_for_everyone.pdf", "status": "parsed"}
+    return {"parsed_chunks": new_chunks, "metadata": metadata_update}
 
-# Build the graph
-graph = StateGraph(ExtractState)
-graph.add_node("parse_document", parse_document)
-graph.add_edge(START, "parse_document")
+# Build the graph using the correct State definition and reducer for 'parsed_chunks'
+# For this example, let's assume 'append_chunks' is registered with 'parsed_chunks'
+# when StateGraph is instantiated or via a field annotation if the framework supports it directly.
+# If State uses `Annotated[list[str], operator.add]`, then `operator.add` is the reducer.
+# If `Annotated[list[str], append_chunks]`, then `append_chunks` is the reducer.
+# For clarity, let's assume State is defined as:
+# class State(TypedDict):
+#     parsed_chunks: Annotated[list[str], append_chunks]
+#     metadata: dict # Default reducer (overwrite)
+
+graph_builder = StateGraph(State) # Use the defined State
+graph_builder.add_node("parse_doc_node", parse_document_node) # Use unique node name
+graph_builder.add_edge(START, "parse_doc_node")
+graph_builder.add_edge("parse_doc_node", END) # Typically graphs have an end
 
 # Compile the graph
-chain = graph.compile()
+chain = graph_builder.compile()
 
-# Invoke the chain with an initial parsed chunk
-initial_state = {"parsed_chunks": ["Introduction to AI..."], "metadata": {}}
+# Invoke the chain with an initial state
+initial_state = {"parsed_chunks": ["Introduction to AI..."], "metadata": {"initial_source": "None"}}
 result = chain.invoke(initial_state)
 
 # Output
 print("Accumulated parsed chunks:")
-for idx, chunk in enumerate(result["parsed_chunks"], start=1):
-    print(f"{idx}. {chunk}")
+if "parsed_chunks" in result:
+    for idx, chunk in enumerate(result["parsed_chunks"], start=1):
+        print(f"{idx}. {chunk}")
+print("
+Final metadata:")
+if "metadata" in result:
+    print(result["metadata"])
 
 # =================================
 # Accumulated parsed chunks:
 # 1. Introduction to AI...
 # 2. This is a new paragraph extracted.
+#
+# Final metadata:
+# {'initial_source': 'None', 'source': 'upload/pdf/ai_for_everyone.pdf', 'status': 'parsed'}
 # =================================
 ```
 
@@ -280,69 +318,108 @@ class State(TypedDict):
     table_chunks: Annotated[list[str], operator.add]
     language: str
     retry_count: int 
+    current_step: str # For logging or simple state tracking
 
 # Define Nodes
-def load_pdf(state: State):
+def load_pdf_node(state: State): # Renamed
     print("Loading PDF...")
+    # Initialize or update state fields as necessary
+    return {"current_step": "load_pdf_node", "language": state.get("language", "en"), "retry_count": state.get("retry_count", 2)}
 
-def extract_body_chinese(state: State):
+def extract_body_chinese_node(state: State): # Renamed
     print("Extracting Chinese body text...")
-    return {"body_chunks": ["Chinese paragraph"]}
+    return {"body_chunks": ["Chinese paragraph"], "current_step": "extract_body_chinese_node"}
 
-def extract_body_english(state: State):
+def extract_body_english_node(state: State): # Renamed
     print("Extracting English body text...")
-    return {"body_chunks": ["English paragraph"]}
+    return {"body_chunks": ["English paragraph"], "current_step": "extract_body_english_node"}
 
-def extract_table(state: State):
+def extract_table_node(state: State): # Renamed
     print("Extracting table of contents...")
-    return {"table_chunks": ["Table of contents"]}
+    return {"table_chunks": ["Table of contents data"], "current_step": "extract_table_node"}
 
-def merge_results(state: State):
-    print(f"Merged Body Chunks: {state['body_chunks']}")
-    print(f"Merged Table Chunks: {state['table_chunks']}")
+def merge_results_node(state: State): # Renamed
+    print(f"Current Step: {state.get('current_step')}")
+    print(f"Merged Body Chunks: {state.get('body_chunks', [])}")
+    print(f"Merged Table Chunks: {state.get('table_chunks', [])}")
+    remaining_retries = state.get("retry_count", 0) - 1
+    return {"retry_count": remaining_retries, "current_step": "merge_results_node"}
 
 # Branching
-def route_body_extraction(state: State) -> Sequence[str]:
-    if state["language"] == "zh":
-        return ["extract_body_chinese", "extract_table"]
+def route_language_extraction(state: State) -> str:
+    if state.get("language") == "zh":
+        return "extract_body_chinese_node"
     else:
-        return ["extract_body_english", "extract_table"]
+        return "extract_body_english_node"
 
 # Loop Control
-def check_retry(state: State):
-    if state["retry_count"] <= 0:
+def check_retry_or_end(state: State) -> str:
+    if state.get("retry_count", 0) <= 0:
+        print("Max retries reached or no retries needed. Ending.")
         return END
     else:
-        return {"retry_count": state["retry_count"] - 1}
+        print(f"Retries left: {state.get('retry_count')}. Retrying from load_pdf_node.")
+        return "load_pdf_node" # Loop back to the start
 
 # Build the Graph
 builder = StateGraph(State)
 
 # Add nodes
-builder.add_node(load_pdf)
-builder.add_node(extract_body_chinese)
-builder.add_node(extract_body_english)
-builder.add_node(extract_table)
-builder.add_node(merge_results)
+builder.add_node("load_pdf_node", load_pdf_node)
+builder.add_node("extract_body_chinese_node", extract_body_chinese_node)
+builder.add_node("extract_body_english_node", extract_body_english_node)
+builder.add_node("extract_table_node", extract_table_node)
+builder.add_node("merge_results_node", merge_results_node)
 
 # Add edges
-builder.add_edge(START, "load_pdf")
-builder.add_conditional_edges("load_pdf", route_body_extraction, ["extract_body_chinese", "extract_body_english", "extract_table"])
-builder.add_edge(["extract_body_chinese", "extract_body_english", "extract_table"], "merge_results")
-builder.add_conditional_edges("merge_results", lambda state: END if state["retry_count"] <= 0 else "load_pdf", [END, "load_pdf"])
+builder.add_edge(START, "load_pdf_node")
+
+builder.add_conditional_edges(
+    "load_pdf_node",
+    route_language_extraction,
+    {
+        "extract_body_chinese_node": "extract_body_chinese_node",
+        "extract_body_english_node": "extract_body_english_node",
+    }
+)
+
+# Sequential flow after language-specific extraction
+builder.add_edge("extract_body_chinese_node", "extract_table_node")
+builder.add_edge("extract_body_english_node", "extract_table_node")
+builder.add_edge("extract_table_node", "merge_results_node")
+
+builder.add_conditional_edges(
+    "merge_results_node",
+    check_retry_or_end,
+    {
+        "load_pdf_node": "load_pdf_node", # If retry
+        END: END  # If end
+    }
+)
 
 # Compile
 graph = builder.compile()
 
 # Run with recursion_limit to avoid infinite loop
-try:
-    result = graph.invoke(
-        {"body_chunks": [], "table_chunks": [], "language": "zh", "retry_count": 2},
-        config={"recursion_limit": 5}  
-    )
-    print(result)
-except GraphRecursionError:
-    print("Exceeded maximum recursion limit. Returning last known state.")
+if __name__ == "__main__":
+    try:
+        initial_state = {
+            "body_chunks": [],
+            "table_chunks": [],
+            "language": "zh", # Example: Chinese language
+            "retry_count": 2, # Start with 2 retries
+            "current_step": "initial"
+        }
+        # recursion_limit is important for graphs with cycles
+        final_result = graph.invoke(initial_state, config={"recursion_limit": 10})
+        print("
+Final graph state:")
+        print(final_result)
+    except GraphRecursionError:
+        print("Exceeded maximum recursion limit. Returning last known state.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 ```
 
 > 💡 Notes:
@@ -389,56 +466,58 @@ This enables flexible handling of **dynamic quantities + independent States**, a
 
 ```python
 from langgraph.types import Send
+from typing_extensions import TypedDict
+from typing import Annotated, List # Added List
+import operator # Ensure operator is imported
 
 # Define the overall state
 class OverallState(TypedDict):
-    chunks: list[str]
-    summaries: Annotated[list[str], operator.add]
+    chunks: List[str] # Use List[str]
+    summaries: Annotated[List[str], operator.add] # Use List[str]
+    processed_count: Annotated[int, operator.add] # Example of another field
 
 # Define the dispatch logic using Send API
 def dispatch_chunks(state: OverallState):
-    return [Send("summarize_chunk", {"chunk": chunk}) for chunk in state["chunks"]]
+    # This will send each chunk to the 'summarize_chunk' node to be processed independently.
+    # Each Send invocation creates a new task for 'summarize_chunk' with its own input state.
+    return [Send("summarize_chunk", {"chunk": chunk, "processed_count": 0}) for chunk in state["chunks"]]
 
 # Define the node to summarize a single chunk
-def summarize_chunk(state: OverallState):
-    return {"summaries": [f"Summary of: {state['chunk'][:10]}..."]}
+def summarize_chunk(state: dict): # Receives the specific state sent by Send
+    # Simulate summarization
+    summary = f"Summary of: {state['chunk'][:20]}..."
+    # Return updates for the OverallState
+    return {"summaries": [summary], "processed_count": 1}
+
 
 # Build the graph
 builder = StateGraph(OverallState)
 builder.add_node("summarize_chunk", summarize_chunk)
+
+# The entry point will call dispatch_chunks, which then uses Send
+# to dynamically route to 'summarize_chunk' for each chunk.
 builder.add_conditional_edges(START, dispatch_chunks)
-builder.add_edge("summarize_chunk", END)
+
+# After all 'summarize_chunk' tasks (spawned by Send) are done,
+# LangGraph implicitly collects their outputs and updates the OverallState.
+# Then, the graph proceeds to END.
+builder.add_edge("summarize_chunk", END) # Edges from dynamically created tasks go to END
+
 graph = builder.compile()
 
 # Run the graph
-output = graph.invoke({"chunks": ["This is the first part.", "This is the second part."]})
-print(output)
-```
-
-#### 📌 Node Retry Strategy
-LangGraph introduces node-level **RetryPolicy**. You can pass a `RetryPolicy` object when calling `add_node`.
-
-```python
-from langgraph.pregel import RetryPolicy
-
-RetryPolicy()
-RetryPolicy(initial_interval=0.5, backoff_factor=2.0, max_interval=128.0, max_attempts=3, jitter=True, retry_on=<function default_retry_on at 0x78b964b89940>)
-
-# Define a new graph
-builder = StateGraph(AgentState)
-builder.add_node("model", call_model, retry=RetryPolicy(max_attempts=5))
-```
-
-#### 📌 Returning State Before Reaching Recursion Limit
-In complex workflows, graphs may hit recursion limits (`GraphRecursionError`) due to loops or deep nesting. By default, exceeding the limit raises an error, degrading user experience. LangGraph introduces the `RemainingSteps` mechanism.
-
-By annotating the **State** type with **RemainingSteps**, the framework automatically tracks recursion depth. LangGraph creates and decrements `remaining_steps` for each graph execution, monitoring the current step and remaining executions.
-
-```python
-class State(TypedDict):
-    value: str
-    action_result: str
-    remaining_steps: RemainingSteps
+if __name__ == "__main__":
+    initial_chunks = ["This is the first long document part.", "This is the second part, a bit shorter.", "And a third one."]
+    output = graph.invoke({"chunks": initial_chunks, "summaries": [], "processed_count": 0})
+    print("Output from graph execution:")
+    print(f"Original Chunks: {initial_chunks}")
+    print(f"Summaries: {output['summaries']}")
+    print(f"Total Processed Count: {output['processed_count']}")
+# Expected output:
+# Output from graph execution:
+# Original Chunks: ['This is the first long document part.', 'This is the second part, a bit shorter.', 'And a third one.']
+# Summaries: ['Summary of: This is the first lo...', 'Summary of: This is the second pa...', 'Summary of: And a third one....']
+# Total Processed Count: 3
 ```
 
 ### Asynchronous Execution
@@ -452,1716 +531,442 @@ To switch from synchronous to asynchronous:
 Since many LangChain objects follow the Runnable protocol, and synchronous methods typically have asynchronous counterparts, migration is usually straightforward.
 
 ```python
-async def call_model(state: State):
-    messages = state["messages"]
-    response = await model.ainvoke(messages)
-    return {"messages": [response]}
+from typing_extensions import TypedDict
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage # Ensure BaseMessage, AIMessage are imported
+from typing import List, Annotated # Ensure List, Annotated are imported
+import operator # For Annotated
+import asyncio # For async operations
+
+# Assume 'model' is an initialized LangChain chat model, e.g., ChatOpenAI()
+# from langchain_openai import ChatOpenAI 
+# model = ChatOpenAI() # Example: Define the model
+
+class AsyncState(TypedDict): # Renamed to avoid conflict
+    messages: Annotated[List[BaseMessage], operator.add]
+    # other fields if needed
+
+async def call_model_async_node(state: AsyncState, config): # Renamed, added config
+    print(f"Calling model with messages: {state['messages'][-1].content}")
+    # Example: Using a LangChain model asynchronously
+    # response = await model.ainvoke(state["messages"], config=config)
+    # Simulate response
+    await asyncio.sleep(0.1) # Simulate async work
+    response = AIMessage(content=f"Async echo: {state['messages'][-1].content}")
+    return {"messages": [response]} # Append new response
+
+# Example graph setup (simplified)
+# from langgraph.graph import StateGraph, START, END
+# graph_builder_async = StateGraph(AsyncState)
+# graph_builder_async.add_node("call_model_async_node", call_model_async_node)
+# graph_builder_async.add_edge(START, "call_model_async_node")
+# graph_builder_async.add_edge("call_model_async_node", END)
+# async_graph = graph_builder_async.compile()
     
-from langchain_core.messages import HumanMessage
-async def main():
-    inputs = {"messages": [HumanMessage(content="What are the keywords in this text?")]}
-    # Streaming Node Output
-    async for output in graph.astream(inputs, stream_mode="updates"):
-        # stream_mode="updates" yields dictionaries with output keyed by node name
-        for key, value in output.items():
-            print(f"Output from node '{key}':")
-            print(value["messages"][-1].pretty_print())
+async def main_async_example(): # Renamed
+    # This main function is for demonstrating the async node.
+    # A full graph invocation would look like:
+    # initial_messages = [HumanMessage(content="Hello, what is the weather?")]
+    # async_result = await async_graph.ainvoke({"messages": initial_messages})
+    # print("Async graph result:")
+    # print(async_result["messages"][-1].pretty_print())
+
+    # To demonstrate streaming output (as in Chinese version's example for astream):
+    # print("
+Streaming async graph output:")
+    # async for output_chunk in async_graph.astream(
+    #     {"messages": [HumanMessage(content="Tell me a joke.")]},
+    #     stream_mode="updates" # or "values" or "messages"
+    # ):
+    #     for key, value in output_chunk.items():
+    #         print(f"Update from node '{key}':")
+    #         if "messages" in value and value["messages"]:
+    #             print(value["messages"][-1].pretty_print())
+    #         else:
+    #             print(value)
+    #     if output_chunk.get("event") == "on_chain_end":
+    #         print("\n--- Async Graph Stream Ended ---")
+
+    # For now, as the node is placeholder:
+    # final_state = await compiled_llm_graph.ainvoke(initial_graph_state)
+    # print("\nFinal State (after placeholder execution):")
+    # print(f"Summary: {final_state['summary_output'][-1].content}")
+    # print(f"Keywords: {final_state['keywords_output'][-1].content}")
+    pass
+
+if __name__ == "__main__":
+    # To run the async main example:
+    # asyncio.run(main_async_example())
+    pass
 ```
 
 ### Distributed Support
-LangGraph supports distributing agent tasks across multiple compute nodes or threads for concurrent execution.
+LangGraph supports distributing tasks across multiple compute nodes or threads. This is particularly useful for scaling agentic applications or parallelizing steps in a complex workflow. A common way to achieve this is by integrating with distributed computing frameworks like Ray.
 
-For example, integrating with Ray is straightforward:
-
-+ **Encapsulate StateGraph in an Actor class**.
-+ **Register as an Actor with `@ray.remote`**.
-+ **In the main program (Driver), instantiate with `GraphActor.remote()`**.
-+ **Ray schedules worker processes in the cluster to run the Actor instance**.
-+ **Asynchronously call Actor methods remotely**, with Actors executing **independently, concurrently, and distributedly**.
-
-Code example:
+1.  **Encapsulate StateGraph in a Ray Actor**: Define a Ray actor that holds a compiled LangGraph.
+2.  **Instantiate Actors**: Create multiple instances of this actor, which Ray can schedule on different workers in a cluster.
+3.  **Remote Asynchronous Calls**: Invoke methods on these actors asynchronously. Each actor processes its tasks independently and concurrently.
 
 ```python
 import ray
 from langgraph.graph import StateGraph, START, END
 from typing import TypedDict, List
 import asyncio
+import time # For simulating work
 
-# Initialize Ray
-ray.init(ignore_reinit_error=True)
+# Initialize Ray (if not already initialized)
+if not ray.is_initialized():
+    ray.init(ignore_reinit_error=True)
 
-# Define the state type for langgraph
-class SimpleState(TypedDict):
+# Define the state type for LangGraph
+class DistributedState(TypedDict):
+    task_id: int
     message_list: List[str]
+    status: str
 
-# Node function
-def add_message(state: SimpleState):
-    state["message_list"].append("New message")
-    print(f"Node executed, current message list: {state['message_list']}")
-    return state
+# Node function (can be async or sync)
+async def process_task_node(state: DistributedState):
+    task_id = state["task_id"]
+    print(f"Worker (Ray Actor) processing task_id: {task_id}, current messages: {state['message_list']}")
+    await asyncio.sleep(0.5) # Simulate some async work
+    new_message = f"Task {task_id} processed at {time.time()}"
+    return {"message_list": state["message_list"] + [new_message], "status": "completed"}
 
 # Ray Actor class to encapsulate StateGraph
-@ray.remote(num_cpus=1)  # Each Actor uses 1 CPU
-class GraphActor:
-    def __init__(self):
-        # Initialize StateGraph and add node
-        self.graph = StateGraph(SimpleState)
-        self.graph.add_node("add_node", add_message)
-        self.graph.set_entry_point("add_node")
-        self.compiled_graph = self.graph.compile()
+@ray.remote(num_cpus=1)  # Each Actor can use 1 CPU
+class GraphWorkerActor:
+    def __init__(self, actor_id: int):
+        self.actor_id = actor_id
+        self.graph_definition = StateGraph(DistributedState)
+        self.graph_definition.add_node("process_task", process_task_node)
+        self.graph_definition.add_edge(START, "process_task")
+        self.graph_definition.add_edge("process_task", END)
+        self.compiled_graph = self.graph_definition.compile()
+        print(f"GraphWorkerActor {self.actor_id} initialized.")
 
-    async def execute(self, initial_state):
-        # Execute the compiled graph
-        return await self.compiled_graph.ainvoke(initial_state)
+    async def execute_graph(self, initial_state: DistributedState) -> DistributedState:
+        print(f"Actor {self.actor_id} executing graph for task_id: {initial_state['task_id']}")
+        result = await self.compiled_graph.ainvoke(initial_state)
+        return result
 
-# Create and run multiple GraphActors
-async def create_and_run_graphs(num_workers=4):
-    # Create multiple GraphActors
-    graph_actors = [GraphActor.remote() for _ in range(num_workers)]
+# Main function to create and run multiple GraphWorkerActors
+async def run_distributed_graphs(num_workers: int = 2, num_tasks_per_worker: int = 1):
+    # Create multiple GraphWorkerActors
+    actors = [GraphWorkerActor.remote(actor_id=i) for i in range(num_workers)]
 
-    # Prepare initial state for each worker
-    initial_states = [{"message_list": []} for _ in range(num_workers)]
-
-    # Submit all execution tasks
-    exec_tasks = [actor.execute.remote(state) for actor, state in zip(graph_actors, initial_states)]
-
-    # Wait for all tasks to complete
-    results = await asyncio.gather(*[asyncio.to_thread(ray.get, task) for task in exec_tasks])
-
-    # Print results for each worker
-    for idx, result in enumerate(results):
-        print(f"Worker {idx} result: {result['message_list']}")
-
-# Start the test
-if __name__ == "__main__":
-    asyncio.run(create_and_run_graphs(num_workers=4))  # Change num_workers as needed
-    ray.shutdown()
-```
-
-### Streaming Output
-#### 📌 Different Streaming Output Modes
-Streaming is critical for improving the responsiveness of LLM-based applications, particularly in reducing latency. LangGraph supports multiple streaming output modes, including:
-
-1. **values**: Emits all state values after each step.
-2. **updates**: Emits only the node name and updates for each step.
-3. **custom**: Uses StreamWriter for custom data output.
-4. **messages**: Emits LLM messages and metadata token by token.
-5. **debug**: Emits detailed debugging information.
-
-Using `graph.stream(..., stream_mode=<stream_mode>)`, you can stream outputs during graph execution.
-
-```python
-# sync
-for chunk in graph.stream(inputs, stream_mode=["updates", "custom"]):
-    print(chunk)
+    tasks_to_submit = []
+    for i in range(num_workers):
+        for j in range(num_tasks_per_worker):
+            task_id = i * num_tasks_per_worker + j
+            initial_task_state = DistributedState(
+                task_id=task_id,
+                message_list=[f"Initial message for task {task_id}"],
+                status="pending"
+            )
+            # Submit task to an actor (e.g., round-robin or based on load)
+            actor_index = i % num_workers
+            tasks_to_submit.append(actors[actor_index].execute_graph.remote(initial_task_state))
     
-# async
-async for chunk in graph.astream(inputs, stream_mode=["updates", "custom"]):
-    print(chunk)
-```
+    print(f"Submitted {len(tasks_to_submit)} tasks to Ray actors.")
 
-#### 📌 Async Streaming Output Implementation
-The `astream` method returns an asynchronous iterator (`AsyncIterator`) that progressively outputs data during graph execution. Key components in `astream` include `AsyncQueue` and `StreamProtocol`, leveraging `async for` and the `asyncio` library for asynchronous streaming.
+    # Wait for all tasks to complete and retrieve results
+    results = await asyncio.gather(*tasks_to_submit) # Ray ObjectRefs can be awaited directly
 
-```python
-async def astream(
-        self,
-        input: dict[str, Any] | Any,
-        config: RunnableConfig | None = None,
-        *,
-        stream_mode: StreamMode | list[StreamMode] | None = None,
-        output_keys: str | Sequence[str] | None = None,
-        interrupt_before: All | Sequence[str] | None = None,
-        interrupt_after: All | Sequence[str] | None = None,
-        checkpoint_during: bool | None = None,
-        debug: bool | None = None,
-        subgraphs: bool = False,
-    ) -> AsyncIterator[dict[str, Any] | Any]:
-```
-
-The `AsyncQueue` is a thread-safe asynchronous queue for storing stream data. `stream_put` is an async method that pushes data into the queue using `aioloop.call_soon_threadsafe` to ensure asynchronous delivery.
-
-```python
-stream = AsyncQueue()
-aioloop = asyncio.get_running_loop()
-stream_put = cast(
-    Callable[[StreamChunk], None],
-    partial(aioloop.call_soon_threadsafe, stream.put_nowait),
-)
-```
-
-#### 📌 Core Steps of Async Streaming:
-+ Data is progressively added to the `stream` queue.
-+ The `output()` function asynchronously retrieves data from the `stream` queue and yields it.
-+ `async for` fetches these results asynchronously until the `stream` queue is empty.
-
-```python
-def output() -> Iterator:
-    while True:
-        try:
-            ns, mode, payload = stream.get_nowait()
-        except asyncio.QueueEmpty:
-            break
-        if subgraphs and isinstance(stream_mode, list):
-            yield (ns, mode, payload)
-        elif isinstance(stream_mode, list):
-            yield (mode, payload)
-        elif subgraphs:
-            yield (ns, payload)
-        else:
-            yield payload
-```
-
-#### 📌 LLM Streaming Output:
-Below is an example of a single node with two LLM calls:
-
-```python
-from typing import TypedDict
-from langgraph.graph import START, StateGraph
-from langchain_openai import ChatOpenAI
-import asyncio
-import os
-
-# Define two model instances with tags for filtering
-summary_model = ChatOpenAI(model="gpt-4o-mini", tags=["summary"])
-keyword_model = ChatOpenAI(model="gpt-4o-mini", tags=["keyword"])
-
-# Define the state structure
-class State(TypedDict):
-    text: str
-    summary: str
-    keywords: str
-
-async def call_model(state, config):
-    text = state["text"]
-    print("Generating summary...")
-    summary_response = await summary_model.ainvoke(
-        [{"role": "user", "content": f"Please summarize the following text:\n\n{text}"}],
-        config,
-    )
-    print("\n\nExtracting keywords...")
-    keyword_response = await keyword_model.ainvoke(
-        [{"role": "user", "content": f"Please extract important keywords from the following text:\n\n{text}"}],
-        config,
-    )
-    return {"summary": summary_response.content, "keywords": keyword_response.content}
-
-graph = StateGraph(State).add_node(call_model).add_edge(START, "call_model").compile()
-
-async def main():
-    input_text = (
-        "Artificial intelligence (AI) is the simulation of human intelligence processes "
-        "by machines, especially computer systems. Specific applications of AI include "
-        "expert systems, natural language processing, speech recognition, and machine vision."
-    )
-    async for msg, metadata in graph.astream(
-        {"text": input_text},
-        stream_mode="messages",
-    ):
-        if msg.content:
-            print(msg.content, end="|", flush=True)
-        # We can use the streamed metadata and filter events using the tags we've added to the LLMs previously
-        # if msg.content and "summary" in metadata.get("tags", []):
-        #     print(msg.content, end="|", flush=True)
+    print("\n--- Distributed Execution Results ---")
+    for idx, result_state in enumerate(results):
+        print(f"Result for submitted task {idx}:")
+        print(f"  Task ID: {result_state['task_id']}")
+        print(f"  Messages: {result_state['message_list']}")
+        print(f"  Status: {result_state['status']}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # Example of running the distributed graph execution
+    # asyncio.run(run_distributed_graphs(num_workers=2, num_tasks_per_worker=2))
+    # ray.shutdown() # Shutdown Ray when done
+    pass
+```
 
-############ Result #############
-# Generating summary...
-# Artificial| intelligence| (AI) involves| machines simulating human| intelligence processes. Key| applications of AI include| expert systems, natural| language processing, speech| recognition, and machine| vision.|
+### **Streaming Output**
+Streaming is crucial for responsiveness in LLM applications, especially for reducing perceived latency. LangGraph offers various streaming modes:
 
-# Extracting keywords...
-# Here| are| the| important keywords extracted from| the text:
+1.  **`values`**: Emits all state values after each step.
+2.  **`updates`**: Emits only the node name and the updates from each step.
+3.  **`custom`** (via `StreamWriter`): Allows custom data output. (Note: `StreamWriter` is more of an internal mechanism or for advanced customization; `stream_mode` is the primary API for users).
+4.  **`messages`**: Streams LLM messages token by token, along with their metadata. This is particularly useful for chat applications.
+5.  **`debug`**: Emits detailed debugging information about the graph execution.
 
-# -| Artificial intelligence (AI|)  
-# - Simulation|  
-# - Human intelligence|
-# ...
+You can stream outputs during graph execution using `graph.stream(...)` (synchronous) or `graph.astream(...)` (asynchronous) with the `stream_mode` parameter.
+
+```python
+# Assume 'graph' is a compiled LangGraph instance and 'inputs' is the initial state.
+
+# Synchronous streaming example
+# for chunk in graph.stream(inputs, stream_mode="updates"): # or ["updates", "messages"]
+#     print(chunk)
+    
+# Asynchronous streaming example
+# async for chunk in graph.astream(inputs, stream_mode="messages"):
+#     print(chunk)
+```
+
+#### 📌 LLM Streaming Example:
+This example demonstrates streaming token-by-token output from LLM calls within a LangGraph node.
+
+```python
+from typing_extensions import TypedDict
+from langgraph.graph import START, END, StateGraph
+from langchain_core.messages import HumanMessage, AIMessage, BaseMessage # Ensure BaseMessage is imported
+from typing import List, Annotated # Ensure List, Annotated are imported
+import operator # For Annotated
+import asyncio
+# Ensure you have an LLM provider library, e.g., langchain_openai
+# from langchain_openai import ChatOpenAI 
+
+# Example: Define LLM models (replace with your actual model initializations)
+# summary_model = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, tags=["summary_llm"])
+# keyword_model = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, tags=["keyword_llm"])
+
+
+# Define the state structure for the graph
+class LLMStreamState(TypedDict):
+    text_input: str
+    summary_output: Annotated[List[BaseMessage], operator.add] # To accumulate streamed summary
+    keywords_output: Annotated[List[BaseMessage], operator.add] # To accumulate streamed keywords
+    current_operation: str # To track which LLM is active
+
+# Define the node that calls the LLMs
+async def multi_llm_call_node(state: LLMStreamState, config):
+    text_to_process = state["text_input"]
+    
+    # These would be actual LLM calls that support streaming.
+    # LangGraph's astream_events will pick up streaming from runnables tagged within the config.
+    # The node itself returns the final aggregated content.
+    
+    # Simulate invoking summary model (actual call would be `await summary_model.ainvoke(...)`)
+    # For demonstration, we'll assume the graph's streaming mechanism handles the token output.
+    # This node's role is to orchestrate the calls.
+    
+    # To make this example runnable without actual LLM calls,
+    # we'll just update the state to indicate completion.
+    # In a real scenario, the LLM calls would happen here.
+    # summary_content = (await summary_model.ainvoke(f"Summarize this: {text_to_process}", config)).content
+    # keywords_content = (await keyword_model.ainvoke(f"Extract keywords from: {text_to_process}", config)).content
+
+    # This node would typically return the final content after streaming is done by the LLMs.
+    # For this example, we'll return placeholder messages.
+    # The actual streaming is observed via graph.astream_events.
+    return {
+        "summary_output": [AIMessage(content="[Placeholder Summary Complete]")],
+        "keywords_output": [AIMessage(content="[Placeholder Keywords Complete]")]
+    }
+
+# Build the graph
+# graph_llm_stream = StateGraph(LLMStreamState)
+# graph_llm_stream.add_node("multi_llm_call", multi_llm_call_node)
+# graph_llm_stream.add_edge(START, "multi_llm_call")
+# graph_llm_stream.add_edge("multi_llm_call", END)
+# compiled_llm_graph = graph_llm_stream.compile()
+
+async def stream_llm_output_main():
+    sample_text = (
+        "LangGraph is a library for building stateful, multi-actor applications with LLMs, "
+        "built on top of (and intended to be used with) LangChain. "
+        "It extends the LangChain Expression Language with the ability to coordinate multiple "
+        "chains (or actors) across multiple steps of computation in a cyclic manner."
+    )
+    
+    initial_graph_state = LLMStreamState(
+        text_input=sample_text, 
+        summary_output=[], 
+        keywords_output=[],
+        current_operation=""
+    )
+
+    print("--- Streaming Summary (simulated via tags if LLMs were real) ---")
+    # To observe streaming from a specific LLM, you'd typically tag your LLMs
+    # and then filter events by those tags in the config.
+    # e.g., config={"configurable": {"tags": ["summary_llm"]}}
+    # Since we are not making real LLM calls in multi_llm_call_node for this snippet,
+    # we'll simulate iterating through events.
+    
+    # Example of how you would use astream_events with actual LLMs:
+    # async for event in compiled_llm_graph.astream_events(
+    #     initial_graph_state, 
+    #     config={"configurable": {"tags": ["summary_llm"]}}, # Filter for summary LLM
+    #     version="v2" # Required for astream_events
+    # ):
+    #     if event["event"] == "on_chat_model_stream":
+    #         chunk = event["data"]["chunk"]
+    #         if isinstance(chunk, AIMessageChunk): # AIMessageChunk has 'content'
+    #             print(chunk.content, end="", flush=True)
+    #     elif event["event"] == "on_chain_end" and event["name"] == "RunnableSequence": # Or your LLM chain name
+    #         print("\n--- Summary Stream Ended ---")
+
+    # print("\n\n--- Streaming Keywords (simulated) ---")
+    # async for event in compiled_llm_graph.astream_events(
+    #     initial_graph_state, 
+    #     config={"configurable": {"tags": ["keyword_llm"]}}, # Filter for keyword LLM
+    #     version="v2"
+    # ):
+    #     if event["event"] == "on_chat_model_stream":
+    #         chunk = event["data"]["chunk"]
+    #         if isinstance(chunk, AIMessageChunk):
+    #             print(chunk.content, end="", flush=True)
+    #     elif event["event"] == "on_chain_end" and event["name"] == "RunnableSequence":
+    #         print("\n--- Keyword Stream Ended ---")
+    
+    # For now, as the node is placeholder:
+    # final_state = await compiled_llm_graph.ainvoke(initial_graph_state)
+    # print("\nFinal State (after placeholder execution):")
+    # print(f"Summary: {final_state['summary_output'][-1].content}")
+    # print(f"Keywords: {final_state['keywords_output'][-1].content}")
+    pass
+
+if __name__ == "__main__":
+    # asyncio.run(stream_llm_output_main())
+    pass
 ```
 
 ### Persistence
+Many AI applications require memory to share context across multiple interactions. In LangGraph, you can add memory to any `StateGraph` using checkpointers. Checkpointers save the state of the graph at various points, allowing you to resume execution later or inspect intermediate states.
+
+![](pictures/checkpoints_full_story.jpg)
+
 #### 📌 Thread-Level Persistence
-Many AI applications require memory to share context across interactions. In LangGraph, thread-level persistence can be added to any StateGraph by including a `checkpointer` during graph compilation to maintain its state.
+This is useful for maintaining conversation history or state within a single session or thread of execution. `MemorySaver` is an in-memory checkpointer.
 
 ```python
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import StateGraph, START, END
+from typing_extensions import TypedDict
+from typing import List, Annotated
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage # Ensure AIMessage is imported
+import operator
 
-memory = MemorySaver()
+# Define a state for messages
+class MessagesState(TypedDict):
+    messages: Annotated[List[BaseMessage], operator.add]
 
-def call_model(state: MessagesState):
-    response = model.invoke(state["messages"])
-    return {"messages": response}
+# Example model (replace with your actual model)
+# from langchain_openai import ChatOpenAI
+# model = ChatOpenAI(temperature=0)
 
-builder = StateGraph(MessagesState)
-builder.add_node("call_model", call_model)
-builder.add_edge(START, "call_model")
-# Enable memory saving during execution
-graph = builder.compile(checkpointer=memory)  
+def simple_chat_node(state: MessagesState):
+    # response = model.invoke(state["messages"]) # Actual model call
+    # Simulate response
+    last_message = state["messages"][-1].content if state["messages"] else "no message"
+    response = AIMessage(content=f"Echo: {last_message}")
+    return {"messages": [response]}
 
-input_message = {"role": "user", "content": "hi! I'm Alen"}
+# Setup graph with checkpointer
+memory_checkpointer = MemorySaver()
+chat_graph_builder = StateGraph(MessagesState)
+chat_graph_builder.add_node("chat_node", simple_chat_node)
+chat_graph_builder.add_edge(START, "chat_node")
+chat_graph_builder.add_edge("chat_node", END) # Or loop back for continuous chat
 
-# Stream the response with memory saving
-for chunk in graph.stream({"messages": [input_message]}, {"configurable": {"thread_id": "1"}}, stream_mode="values"):
-    chunk["messages"][-1].pretty_print()
+# Compile with the checkpointer
+persisted_chat_graph = chat_graph_builder.compile(checkpointer=memory_checkpointer)
 
-# Send another message in the same thread, using memory to preserve the conversation context
-input_message = {"role": "user", "content": "what's my name?"}
-for chunk in graph.stream({"messages": [input_message]}, {"configurable": {"thread_id": "1"}}, stream_mode="values"):
-    chunk["messages"][-1].pretty_print()
+# Example usage
+if __name__ == "__main__":
+    thread_id_1 = "user_session_1"
+    config_1 = {"configurable": {"thread_id": thread_id_1}}
 
-# Send a message in a new thread, demonstrating memory usage across threads
-input_message = {"role": "user", "content": "what's my name?"}
-for chunk in graph.stream(
-    {"messages": [input_message]},
-    {"configurable": {"thread_id": "2"}},  # New thread
-    stream_mode="values",
-):
-    chunk["messages"][-1].pretty_print()
-    
-# ================================ Human Message =================================
-# hi! I'm Alen
-# ================================== AI Message ==================================
-# Hi Alen! Nice to meet you. How can I assist you today? 😊
-# ================================ Human Message =================================
-# what's my name?
-# ================================== AI Message ==================================
-# Your name is **Alen**! 😊 Did I get it right?
-# ================================ Human Message =================================
-# what's my name?
-# ================================== AI Message ==================================
-# I don't have access to specific personal information about you, so I don't know your name. 😊
+    print(f"--- Conversation for Thread ID: {thread_id_1} ---")
+    initial_messages_1 = [HumanMessage(content="Hi! I'm Alex.")]
+    for chunk in persisted_chat_graph.stream({"messages": initial_messages_1}, config_1, stream_mode="values"):
+        if chunk["messages"]:
+            chunk["messages"][-1].pretty_print()
+
+    follow_up_messages_1 = [HumanMessage(content="What's my name?")]
+    for chunk in persisted_chat_graph.stream({"messages": follow_up_messages_1}, config_1, stream_mode="values"):
+        if chunk["messages"]:
+            chunk["messages"][-1].pretty_print()
+
+    # Demonstrate a different thread (no memory of Alex)
+    thread_id_2 = "user_session_2"
+    config_2 = {"configurable": {"thread_id": thread_id_2}}
+    print(f"\n--- Conversation for Thread ID: {thread_id_2} ---")
+    initial_messages_2 = [HumanMessage(content="What's my name?")]
+    for chunk in persisted_chat_graph.stream({"messages": initial_messages_2}, config_2, stream_mode="values"):
+        if chunk["messages"]:
+            chunk["messages"][-1].pretty_print()
 ```
 
 #### 📌 Cross-Thread Persistence
 LangGraph also supports persisting data across **multiple threads**. The core is using the `Store` interface to store shared data across threads (e.g., user preferences). A `namespace` (e.g., `("memories", user_id)`) isolates different users’ memories.
 
 #### 📌 Using Postgres Checkpointer for Persistence
-```python
-from langgraph.graph import StateGraph
-
-builder = StateGraph(....)
-# ... define the graph
-checkpointer = # postgres checkpointer 
-graph = builder.compile(checkpointer=checkpointer)
-```
-
-> 💡 You need to run `.setup()` on the checkpointer once to initialize the database before use.
->
-
-**Synchronous Connection**
-
-Synchronous connections execute operations in a blocking manner, meaning each operation waits for completion before proceeding. Below are three common approaches:
-
-+ With a connection
-+ With a connection pool
-+ With a connection string
+For production environments, a database like PostgreSQL is a common choice for persistence. LangGraph provides `PostgresSaver` (sync) and `AsyncPostgresSaver` (async).
 
 ```python
-from langgraph.prebuilt import create_react_agent
-from psycopg_pool import ConnectionPool
-from langgraph.checkpoint.postgres import PostgresSaver
+from langgraph.checkpoint.postgres import PostgresSaver, AsyncPostgresSaver
+# from psycopg_pool import ConnectionPool # For sync pool
+# from psycopg import Connection, AsyncConnection # For sync/async connections
+# from langgraph.prebuilt import create_react_agent # Example agent
 
-DB_URI = "postgresql://postgres:postgres@localhost:5442/postgres?sslmode=disable"
-connection_kwargs = {
-    "autocommit": True,
-    "prepare_threshold": 0,
-}
+# DB_URI = "postgresql://user:password@host:port/dbname?sslmode=disable" # Your DB URI
+# connection_kwargs = {"autocommit": True, "prepare_threshold": 0}
 
-# =============With a connection ==============
-with Connection.connect(DB_URI, **connection_kwargs) as conn:
-    checkpointer = PostgresSaver(conn)
-    checkpointer.setup()
-    graph = create_react_agent(model, tools=tools, checkpointer=checkpointer)
-    config = {"configurable": {"thread_id": "2"}}
-    res = graph.invoke({"messages": [("human", "What's the language of this paper?")]}, config)
+# Synchronous Connection Examples:
+# 1. With a direct connection:
+# with Connection.connect(DB_URI, **connection_kwargs) as conn:
+#     pg_checkpointer_sync = PostgresSaver(conn)
+#     # config_tuple = pg_checkpointer_sync.get_tuple(config) # 'config' needs thread_id
 
-    checkpoint_tuple = checkpointer.get_tuple(config)
+# 2. With a connection pool:
+# with ConnectionPool(DB_URI, kwargs=connection_kwargs) as pool:
+#     pg_checkpointer_pool = PostgresSaver(pool)
+#     # checkpoint = pg_checkpointer_pool.get(config)
 
-# ===========With a connection pool============
-with ConnectionPool(
-    # Example configuration
-    conninfo=DB_URI,
-    max_size=20,
-    kwargs=connection_kwargs,
-) as pool:
-    checkpointer = PostgresSaver(pool)
-    checkpointer.setup()
-    graph = create_react_agent(model, tools=tools, checkpointer=checkpointer)
-    config = {"configurable": {"thread_id": "1"}}
-    res = graph.invoke({"messages": [("human", "What's the language of this paper?")]}, config)
-    checkpoint = checkpointer.get(config)
+# 3. With a connection string (recommended for simplicity):
+# with PostgresSaver.from_conn_string(DB_URI) as pg_checkpointer_conn_str:
+#     # react_agent_graph = create_react_agent(model, tools, checkpointer=pg_checkpointer_conn_str)
+#     # checkpoint_tuples = list(pg_checkpointer_conn_str.list(config))
+#     pass
 
-# ===========With a connection string============
-with PostgresSaver.from_conn_string(DB_URI) as checkpointer:
-    graph = create_react_agent(model, tools=tools, checkpointer=checkpointer)
-    config = {"configurable": {"thread_id": "3"}}
-    res = graph.invoke({"messages": [("human", "What's the language of this paper?")]}, config)
 
-    checkpoint_tuples = list(checkpointer.list(config))
+# Asynchronous Connection Examples:
+# 1. With a direct async connection:
+# async def use_async_postgres_direct():
+#     async with await AsyncConnection.connect(DB_URI, **connection_kwargs) as aconn:
+#         pg_checkpointer_async_direct = AsyncPostgresSaver(aconn)
+#         # checkpoint_tuple_async = await pg_checkpointer_async_direct.aget_tuple(config)
+
+# 2. With an async connection pool (e.g., using psycopg_pool.AsyncConnectionPool):
+# async def use_async_postgres_pool():
+#     async with AsyncConnectionPool(DB_URI, kwargs=connection_kwargs) as apool:
+#         pg_checkpointer_async_pool = AsyncPostgresSaver(apool)
+#         # checkpoint_async = await pg_checkpointer_async_pool.aget(config)
+
+# 3. With an async connection string (recommended for simplicity):
+# async def use_async_postgres_conn_str():
+#     async with AsyncPostgresSaver.from_conn_string(DB_URI) as pg_checkpointer_async_conn_str:
+#         # react_agent_graph_async = await create_react_agent_async(model, tools, checkpointer=pg_checkpointer_async_conn_str) # Fictional async agent
+#         # checkpoint_tuples_async = [c async for c in pg_checkpointer_async_conn_str.alist(config)]
+#         pass
+
+# Remember to run .setup() on the checkpointer once to initialize the necessary database tables before first use.
+# For example:
+# sync_cp = PostgresSaver.from_conn_string(DB_URI)
+# sync_cp.setup()
+# async_cp = AsyncPostgresSaver.from_conn_string(DB_URI)
+# await async_cp.setup()
 ```
+> 💡 You need to run `.setup()` on the checkpointer instance once to initialize the necessary database tables before first use.
 
-**Asynchronous Connection**
+### Logging & Monitoring (Observability)
+LangSmith is specifically designed for **monitoring and debugging LLM applications**. It provides real-time tracking of workflows, model performance, and offers observability features optimized for large models, covering development, testing, and production. LangSmith is framework-agnostic—it can be used with LangChain and LangGraph, or standalone. For LangGraph, integrating LangSmith allows for generating traces of the entire pipeline, facilitating debugging and monitoring.
 
-Asynchronous connections enable non-blocking database operations, allowing other parts of the application to continue running while waiting for database operations to complete. This is particularly useful for high-concurrency scenarios or I/O-bound operations.
+To use LangSmith, you typically set environment variables for your API key and project, and LangChain/LangGraph runnables will automatically log traces.
 
-```python
-from psycopg import AsyncConnection
-
-async with await AsyncConnection.connect(DB_URI, **connection_kwargs) as conn:
-    checkpointer = AsyncPostgresSaver(conn)
-    graph = create_react_agent(model, tools=tools, checkpointer=checkpointer)
-    config = {"configurable": {"thread_id": "5"}}
-    res = await graph.ainvoke(
-        {"messages": [("human", "What's the weather in NYC?")]}, config
-    )
-    checkpoint_tuple = await checkpointer.aget_tuple(config)
 ```
-
-### Logging & Observability
-LangSmith is specifically designed for **monitoring and debugging LLM applications**, offering real-time tracking of workflows and model performance. LangSmith provides **LLM-optimized observability features**, ideal for development, testing, and production environments. LangSmith is framework-agnostic—it works with LangChain, LangGraph, or standalone. For LangGraph, integrating LangSmith enables **tracking of the entire pipeline**, facilitating debugging and monitoring.
+# Example environment variables for LangSmith:
+# export LANGCHAIN_TRACING_V2="true"
+# export LANGCHAIN_API_KEY="YOUR_LANGSMITH_API_KEY"
+# export LANGCHAIN_PROJECT="Your_LangGraph_Project_Name" 
+```
+When these are set, graph invocations will be traced in LangSmith, providing visibility into each node's execution, inputs, outputs, and any LLM calls made.
 
 ---
-
-## Basic Introduction
-AutoGen is an open-source framework developed by Microsoft, designed to solve complex tasks through collaborative AI agents. **AutoGen** focuses on **conversational agents**, allowing developers to extend simple agents with customizable components or combine multiple agents into more powerful **agent workflows**. Its modular design simplifies implementation, offering great convenience to developers.
-
-Core components include:
-
-+ **AutoGen Studio**: A no-code development tool with a visual interface for rapidly building and debugging multi-agent systems.
-+ **autogen-agentchat**: A Python library for building conversational single-agent and multi-agent applications.
-+ **autogen-core**: An event-driven programming framework for building scalable multi-agent AI systems.
-
-AutoGen’s design goal is to simplify the orchestration, automation, and optimization of complex LLM workflows, maximizing LLM performance while overcoming their limitations. If you aim to build a system with multiple collaborating AI agents, AutoGen is a strong candidate.
-
----
-
-# LlamaIndex
-## Basic Introduction
-LlamaIndex is a data framework for LLM applications, designed to ingest, structure, and access private or domain-specific data, specializing in providing external data access for large language models (LLMs).
-
-Unlike traditional frameworks that organize workflows using **Directed Acyclic Graphs (DAGs)**, LlamaIndex introduces a more natural and expressive **Workflow mechanism**, addressing challenges in complex AI workflows, such as loops, branches, and dynamic data passing. Its key advantages include:
-
-+ **More Intuitive Control Flow**: Loops and branches are first-class citizens in Workflows, eliminating the need to simulate them implicitly through edges, greatly improving readability and maintainability.
-+ **Simplified Data Flow Management**: Data passing between nodes is clearer, reducing the complexity of handling defaults, optional parameters, and data alignment common in DAGs.
-+ **Natural Developer Experience**: Aligns with how developers think when building complex, dynamic AI applications (e.g., Agent systems, interactive reasoning chains), without needing to align with low-level graph structures.
-
-> _Official Reference_: [LlamaIndex Documentation](https://docs.llamaindex.ai/), [LlamaIndex GitHub](https://github.com/run-llama/llama_index).
->
-
-## Framework Evaluation
-### Usage Instructions
-In the **LlamaIndex** framework, a workflow (`Workflow`) consists of multiple steps (`step`). Each step accepts one or more **events (Event)** and generates a new event. Workflows typically start with a special **StartEvent** and end with a **StopEvent**.
-
-#### 📌 Core Concepts:
-1. `**StartEvent**`: The event that initiates the workflow, typically the input for the first step.
-2. `**StopEvent**`: The event that terminates the workflow, returning the final result.
-3. `**Event**`: All events (including StartEvent and StopEvent) must inherit from the `Event` class. Developers can define custom events to pass data between steps.
-
-#### 📌 Step Definition:
-+ `**@step**` Decorator: Marks a method as a step in the workflow.
-+ Each step accepts an event as input and returns an event as output.
-
-#### 📌 Workflow Execution:
-1. Create a workflow instance.
-2. Call the `run()` method to start the workflow with an initial event.
-3. Steps execute sequentially, each generating a new event based on the previous step’s output.
-4. By default, workflows are asynchronous, so use `await` to retrieve the result of the `run` command.
-
-```python
-from llama_index.core.workflow import (
-    StartEvent,
-    StopEvent,
-    Workflow,
-    step,
-    Event,
-)
-import asyncio
-
-# Define event classes
-class PDFLoadedEvent(Event):
-    pdf_content: str
-
-class ParsedTextEvent(Event):
-    parsed_text: str
-
-class SummarizedTextEvent(Event):
-    summary: str
-
-class DatabaseStoredEvent(Event):
-    result: str
-
-# Create workflow
-class MyWorkflow(Workflow):
-    @step
-    async def start_step(self, ev: StartEvent) -> PDFLoadedEvent:
-        print("Starting the workflow...")
-        return PDFLoadedEvent(pdf_content="Loaded PDF content here.")
-
-    @step
-    async def pdf_parser_step(self, ev: PDFLoadedEvent) -> ParsedTextEvent:
-        print(f"Parsing PDF content: {ev.pdf_content}")
-        return ParsedTextEvent(parsed_text="Parsed text from the PDF.")
-
-    @step
-    async def text_summary_step(self, ev: ParsedTextEvent) -> SummarizedTextEvent:
-        print(f"Summarizing parsed text: {ev.parsed_text}")
-        return SummarizedTextEvent(summary="Summary of the parsed text.")
-
-    @step
-    async def database_persistence_step(self, ev: SummarizedTextEvent) -> DatabaseStoredEvent:
-        print(f"Storing summarized text in database: {ev.summary}")
-        return DatabaseStoredEvent(result="Text stored in PostgreSQL database.")
-
-    @step
-    async def end_step(self, ev: DatabaseStoredEvent) -> StopEvent:
-        print(f"Final result: {ev.result}")
-        return StopEvent(result="Workflow complete.")
-
-async def main():
-    w = MyWorkflow(timeout=10, verbose=False)
-    result = await w.run(first_input="Start the workflow.")
-    print(result)
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
-
-#### 📌 Built-in Visualization Tools
-LlamaIndex’s standout feature is its built-in visualization tools, which can generate HTML for viewing:
-
-```python
-from llama_index.utils.workflow import draw_all_possible_flows
-draw_all_possible_flows(MyWorkflow, filename="multi_step_workflow.html")
-```
-![](pictures/llamaindex_wf.png)
-
-### State Management
-The demo example uses attributes of custom events to pass data sequentially, but this chained approach lacks flexibility, such as **cross-node data passing** or global context state management. To address this, LlamaIndex introduces the `Context` type parameter, as shown below:
-
-```python
-from llama_index.core.workflow import (
-    StartEvent,
-    StopEvent,
-    Workflow,
-    step,
-    Event,
-    Context,
-)
-```
-
-Now, we define a `start` event to check if data is loaded into the context. If not, it returns a `SetupEvent`, triggering data loading and looping back to `start`’s `setup`.
-
-```python
-class SetupEvent(Event):
-    query: str
-
-class StepTwoEvent(Event):
-    query: str
-
-class StatefulFlow(Workflow):
-    @step
-    async def start(
-        self, ctx: Context, ev: StartEvent
-    ) -> SetupEvent | StepTwoEvent:
-        db = await ctx.get("some_database", default=None)
-        if db is None:
-            print("Need to load data")
-            return SetupEvent(query=ev.query)
-
-        # Do something with the query
-        return StepTwoEvent(query=ev.query)
-
-    @step
-    async def setup(self, ctx: Context, ev: SetupEvent) -> StartEvent:
-        # Load data
-        await ctx.set("some_database", [1, 2, 3])
-        return StartEvent(query=ev.query)
-```
-
-Then, in `step_two`, we can directly access data from the context without explicitly passing it.
-
-```python
-@step
-async def step_two(self, ctx: Context, ev: StepTwoEvent) -> StopEvent:
-    # Do something with the data
-    print("Data is ", await ctx.get("some_database"))
-
-    return StopEvent(result=await ctx.get("some_database"))
-
-w = StatefulFlow(timeout=10, verbose=False)
-result = await w.run(query="Some query")
-print(result)
-```
-
-### Granular Control
-#### 📌 Branching
-As shown below, we create two event types. `Start` randomly decides to follow one branch or another, and multiple steps in each branch complete the workflow.
-
-> 💡 Supports combining branches and loops in any order to meet diverse business needs. You can also use `send_event` to run multiple branches in parallel and `collect_events` to synchronize them.
->
-
-```python
-class BranchA1Event(Event):
-    payload: str
-    
-class BranchB1Event(Event):
-    payload: str
-    
-class BranchWorkflow(Workflow):
-    @step
-    async def start(self, ev: StartEvent) -> BranchA1Event | BranchB1Event:
-        if random.randint(0, 1) == 0:
-            print("Go to branch A")
-            return BranchA1Event(payload="Branch A")
-        else:
-            print("Go to branch B")
-            return BranchB1Event(payload="Branch B")
-```
-
-#### 📌 Looping
-To create a loop, we extend the `MyWorkflow` example from the previous tutorial and add a new custom event type called `LoopEvent`, though it can have any name.
-
-```python
-class LoopEvent(Event):
-    loop_output: str
-
-@step
-async def text_summary_step(self, ev: ParsedTextEvent | LoopEvent) -> SummarizedTextEvent | LoopEvent:
-    if random.randint(0, 1) == 0:
-        print("fail")
-        return LoopEvent(loop_output="Back to step one.")
-    else:
-        print(f"Summarizing parsed text: {ev.parsed_text}")
-        return SummarizedTextEvent(summary="Summary of the parsed text.")
-```
-![](pictures/loop.png)
-
-#### 📌 Subclassing Workflows
-Workflows can be extended or redefined like regular Python classes through inheritance (`class NewWorkflow(BaseWorkflow)`).
-
-+ Subclasses can override specific steps in the parent class (same method name, event types may vary).
-+ Subclasses can add new steps.
-+ Step execution order is determined by the event passing chain (event types), not method order.
-
-```python
-class CustomWorkflow(MainWorkflow):
-    @step
-    async def step_two(self, ev: Step2Event) -> Step2BEvent:
-        print("Sending an email")
-        return Step2BEvent(query=ev.query)
-
-    @step
-    async def step_two_b(self, ev: Step2BEvent) -> Step3Event:
-        print("Also sending a text message")
-        return Step3Event(query=ev.query)
-```
-
-+ Here, the subclass **overrides** `step_two` and **adds** `step_two_b`, extending the processing flow.
-
-#### 📌 Workflow Nesting
-In the main workflow, reserve one or more **sub-workflow slots (Workflow Slot)** and dynamically inject complete sub-workflow instances at runtime.
-
-+ In a main workflow step, accept a `Workflow` type parameter (e.g., `reflection_workflow`).
-+ Use `.run()` to start the sub-workflow, which handles its internal logic.
-+ Inject sub-workflows via `add_workflows(reflection_workflow=YourSubWorkflow())`.
-+ Optionally set a **default sub-workflow** for the slot, allowing the main workflow to run standalone.
-
-Example: Define a main workflow with a sub-workflow slot and a sub-workflow
-
-```python
-class MainWorkflow(Workflow):
-    @step
-    async def start(self, ctx: Context, ev: StartEvent, reflection_workflow: Workflow = DefaultSubflow()) -> Step2Event:
-        print("Need to run reflection")
-        res = await reflection_workflow.run(query=ev.query)
-        return Step2Event(query=res)
-
-class ReflectionFlow(Workflow):
-    @step
-    async def sub_start(self, ctx: Context, ev: StartEvent) -> StopEvent:
-        print("Doing custom reflection")
-        return StopEvent(result="Improved query")
-```
-
-Running with a custom sub-workflow:
-
-```python
-w = MainWorkflow(timeout=10, verbose=False)
-w.add_workflows(reflection_workflow=ReflectionFlow())
-result = await w.run(query="Initial query")
-```
-
-### Asynchronous Concurrency
-Concurrent execution of steps in a workflow can significantly improve efficiency, especially when steps are independent and time-consuming. By emitting multiple events, workflows can execute tasks in parallel, reducing overall execution time.
-
-#### 📌 Emitting Multiple Events
-```python
-class ParallelFlow(Workflow):
-    @step
-    async def start(self, ctx: Context, ev: StartEvent) -> StepTwoEvent:
-        # Emit multiple events to start independent tasks
-        ctx.send_event(StepTwoEvent(query="Query 1"))
-        ctx.send_event(StepTwoEvent(query="Query 2"))
-        ctx.send_event(StepTwoEvent(query="Query 3"))
-
-    @step(num_workers=4)
-    async def step_two(self, ctx: Context, ev: StepTwoEvent) -> StopEvent:
-        print("Running slow query ", ev.query)
-        await asyncio.sleep(random.randint(1, 5))  # Simulate time-consuming operation
-        return StopEvent(result=ev.query)
-```
-
-+ In `start`, three queries are sent in parallel.
-+ `step_two` uses `num_workers=4` to indicate up to four concurrent instances, even with multiple queries.
-
-#### 📌 Collecting Events
-To wait for all parallel tasks to complete before proceeding, use the `collect_events` method to synchronize multiple events. `collect_events` waits for a specified number of events of a given type before continuing.
-
-```python
-class ConcurrentFlow(Workflow):
-    @step
-    async def start(self, ctx: Context, ev: StartEvent) -> StepTwoEvent:
-        # Emit multiple events to start independent tasks
-        ctx.send_event(StepTwoEvent(query="Query 1"))
-        ctx.send_event(StepTwoEvent(query="Query 2"))
-        ctx.send_event(StepTwoEvent(query="Query 3"))
-
-    @step(num_workers=4)
-    async def step_two(self, ctx: Context, ev: StepTwoEvent) -> StepThreeEvent:
-        print("Running query ", ev.query)
-        await asyncio.sleep(random.randint(1, 3))  # Simulate time-consuming operation
-        return StepThreeEvent(result=ev.query)
-
-    @step
-    async def step_three(self, ctx: Context, ev: StepThreeEvent) -> StopEvent:
-        # Wait for all three events
-        result = ctx.collect_events(ev, [StepThreeEvent] * 3)
-        if result is None:
-            return None  # Return if events are incomplete
-
-        # Proceed after collecting all results
-        print(result)
-        return StopEvent(result="Done")
-```
-
-> 💡 `collect_events` returns a list of events in the order they are received.
->
-
-#### 📌 Waiting for Multiple Event Types
-The `collect_events` method can wait for a combination of event types, processing them in the order received.
-
-```python
-@step
-async def step_three(
-    self,
-    ctx: Context,
-    ev: StepACompleteEvent | StepBCompleteEvent | StepCCompleteEvent,
-) -> StopEvent:
-    print("Received event ", ev.result)
-
-    # Wait for three types of events
-    if (
-        ctx.collect_events(
-            ev,
-            [StepCCompleteEvent, StepACompleteEvent, StepBCompleteEvent],
-        )
-        is None
-    ):
-        return None  # Return if events are incomplete
-
-    # Proceed after collecting all events
-    return StopEvent(result="Done")
-```
-
-### Distributed Support
-+ LlamaIndex is inherently asynchronous and event-driven, suitable for single-machine concurrency but requires external frameworks (e.g., Ray) for distributed execution.
-+ Supports distributed data ingestion, indexing, and querying, enabling sharding and parallelization for large-scale tasks.
-+ LlamaIndex officially supports integration with Ray via `@ray.remote`, Ray Datasets, and Ray Serve for distributed Workflow execution.
-+ Ideal for parallel data processing, index building, and high-concurrency queries in production-grade RAG applications.
-
-**Ray Integration Example:**
-
-```python
-import ray
-from llama_index.core.workflow import Workflow, step, StartEvent, StopEvent
-from llama_index.core import Settings, VectorStoreIndex, SimpleDirectoryReader
-
-# Initialize Ray
-ray.init()
-
-# Define distributed Workflow
-@ray.remote
-class DistributedWorkflow(Workflow):
-    @step
-    async def ingest_data(self, ev: StartEvent) -> None:
-        # Load documents in parallel
-        documents = SimpleDirectoryReader("data_directory").load_data()
-        index = VectorStoreIndex.from_documents(documents)
-        return {"index": index}
-
-    @step
-    async def query_step(self, ev: dict) -> StopEvent:
-        index = ev["index"]
-        query_engine = index.as_query_engine()
-        result = query_engine.query("What is the main topic?")
-        return StopEvent(result=str(result))
-
-# Run distributed Workflow
-workflow = DistributedWorkflow.remote()
-result = ray.get(workflow.run.remote())
-print(result)
-```
-
-### Streaming Output
-LlamaIndex supports streaming events to users in real-time via the `ctx.write_event_to_stream()` method. Here, we define a workflow using the `Workflow` class and output event streams in each step.
-
-```python
-from llama_index.utils.workflow import draw_all_possible_flows
-
-...
-
-class MyWorkflow(Workflow):
-    @step
-    async def step_one(self, ctx: Context, ev: StartEvent) -> FirstEvent:
-        ctx.write_event_to_stream(ProgressEvent(msg="Step one is happening"))
-        return FirstEvent(first_output="First step complete.")
-
-    @step
-    async def step_two(self, ctx: Context, ev: FirstEvent) -> SecondEvent:
-        llm = OpenAI(model="gpt-4o-mini")
-        generator = await llm.astream_complete(
-            "Please give me the first 3 paragraphs of Moby Dick, a book in the public domain."
-        )
-        async for response in generator:
-            # Send progress event for each response chunk
-            ctx.write_event_to_stream(ProgressEvent(msg=response.delta))
-        return SecondEvent(
-            second_output="Second step complete, full response attached",
-            response=str(response),
-        )
-
-    @step
-    async def step_three(self, ctx: Context, ev: SecondEvent) -> StopEvent:
-        ctx.write_event_to_stream(ProgressEvent(msg="Step three is happening"))
-        return StopEvent(result="Workflow complete.")
-```
-
-+ In `step_one` and `step_three`, progress events are written directly.
-+ In `step_two`, we use an `OpenAI` generator to asynchronously fetch LLM responses, sending progress events for each response chunk.
-
-To run the workflow asynchronously and listen for events, use the `stream_events()` method, which returns each streaming event until the workflow completes.
-
-```python
-async def main():
-    w = MyWorkflow(timeout=30, verbose=True)
-    handler = w.run(first_input="Start the workflow.")
-
-    async for ev in handler.stream_events():
-        if isinstance(ev, ProgressEvent):
-            print(ev.msg)  # Output real-time progress information
-
-    final_result = await handler
-    print("Final result", final_result)
-```
-
-### Persistence
-By default, LlamaIndex stores data **in memory** and requires **explicit calls** to persist it to disk or other backends.
-
-LlamaIndex’s **storage layer** is highly modular and pluggable, supporting the following data types:
-
-| Type | Description |
-| --- | --- |
-| Document Store | Stores ingested documents (Node objects) |
-| Index Store | Stores index structures and metadata |
-| Vector Store | Stores embedded vectors |
-| Property Graph Store | Stores property graph data (for knowledge graph indices) |
-| Chat Store | Stores chat messages and conversation history |
-
-Document and index stores are based on a unified **Key-Value storage abstraction layer**.
-
-#### 📌 Local Persistence
-```python
-storage_context.persist(persist_dir="<persist_dir>")
-```
-
-+ `<persist_dir>`: Specifies the persistence directory, defaulting to `./storage`.
-+ Multiple indices can be saved in the same directory, but `index_id` must be managed.
-+ Local persistence is suitable for development, single-machine applications, or simple deployments.
-
-Note: If using custom remote storage (e.g., MongoDB), calling `persist()` may be **unnecessary or ineffective**, depending on the backend implementation.
-
-#### 📌 Loading
-Loading persisted data involves **rebuilding the StorageContext** and using helper functions to load indices or graph structures.
-
-Typical process:
-
-+ **Rebuild StorageContext**:
-
-```python
-from llama_index.core import StorageContext
-from llama_index.core.storage.docstore import SimpleDocumentStore
-from llama_index.core.storage.index_store import SimpleIndexStore
-from llama_index.core.vector_stores import SimpleVectorStore
-
-storage_context = StorageContext.from_defaults(
-    docstore=SimpleDocumentStore.from_persist_dir(persist_dir="<persist_dir>"),
-    vector_store=SimpleVectorStore.from_persist_dir(persist_dir="<persist_dir>"),
-    index_store=SimpleIndexStore.from_persist_dir(persist_dir="<persist_dir>"),
-)
-```
-
-+ **Load Objects (Single Index / Multiple Indices / Graph Structure)**:
-
-```python
-from llama_index.core import (
-    load_index_from_storage,
-    load_indices_from_storage,
-    load_graph_from_storage,
-)
-
-# Load a single index (specify index_id)
-index = load_index_from_storage(storage_context, index_id="<index_id>")
-
-# Load all indices
-indices = load_indices_from_storage(storage_context)
-
-# Load knowledge graph (specify root_id)
-graph = load_graph_from_storage(storage_context, root_id="<root_id>")
-```
-
-> Note:
->
-> + If there’s only one index in the directory, `index_id` is optional.
-> + For multiple indices, **specify** the `index_id` to load.
->
-
-#### 📌 Using Remote Backends (e.g., S3/R2)
-### Observability
-#### 📌 Visualizing Workflow Structure (Global Perspective)
-**Purpose**: View **all possible step transition paths** to aid in understanding and designing workflows.
-
-+ Outputs HTML for interactive browser viewing.
-+ Targets the **Workflow Class**, not instances.
-
-```python
-from llama_index.utils.workflow import draw_all_possible_flows
-
-draw_all_possible_flows(MyWorkflow, filename="workflow.html")
-```
-
-#### 📌 Verbose Mode (Detailed Logs)
-**Purpose**: Observe each step’s execution, event transitions in real-time.
-
-```python
-w = MyWorkflow(timeout=10, verbose=True)
-result = await w.run()
-```
-
-Logs include:
-
-+ **Step execution status**
-+ **Event generation**
-+ **Event types**
-
-#### 📌 Stepwise Execution
-**Purpose**: **Manually advance each step** for fine-grained debugging, ideal for complex concurrent or branched workflows.
-
-```python
-w = MyWorkflow(timeout=10, verbose=True)
-handler = w.run(stepwise=True)
-
-while produced_events := await handler.run_step():
-    for ev in produced_events:
-        handler.ctx.send_event(ev)
-
-result = await handler
-```
-
-+ Each `run_step()` call advances one step.
-+ Requires **manual sending** of newly produced events to drive subsequent steps.
-
-#### 📌 Checkpoints
-**Purpose**: **Save and restore** intermediate execution states to avoid restarting from scratch.
-
-**Usage**:
-
-```python
-from llama_index.core.workflow.checkpointer import WorkflowCheckpointer
-
-w = MyWorkflow()
-w_ckptr = WorkflowCheckpointer(workflow=w)
-
-handler = w_ckptr.run()
-await handler
-
-# View all generated checkpoints
-w_ckptr.checkpoints[handler.run_id]
-
-# Resume from a specific checkpoint
-ckpt = w_ckptr.checkpoints[handler.run_id][0]
-handler = w_ckptr.run_from(checkpoint=ckpt)
-await handler
-```
-
-+ Each step records a checkpoint.
-+ Enables **quick state restoration**, accelerating development and debugging cycles.
-
-#### 📌 Third-Party Observability Tools
-+ Integration with external platforms like **Arize** for advanced monitoring and visualization.
-+ Currently, LlamaIndex primarily supports its own observability methods.
-
----
-
-Below is the complete English translation of the provided Markdown content, filling in the missing sections while maintaining the original structure, tone, and details. The translation adheres strictly to the original content without adding extraneous information, and it includes the remaining sections such as **Message History**, **Streaming Output**, **Persistence**, **Debugging and Monitoring**, and **Graph-Based Async State Machine**. Since the original request only provided partial content for **Pydantic AI** and did not include **AutoGen** or **CrewAI**, this response focuses solely on completing the **Pydantic AI** section as requested. If you need translations or evaluations for **AutoGen** and **CrewAI**, please provide the relevant Markdown content or specify the requirements.
-
----
-
-# Pydantic AI
-## Basic Introduction
-Pydantic AI, developed by the creators of the renowned Pydantic library, is an agent development framework that integrates Pydantic with large language models (LLMs). Its unique strength lies in leveraging Pydantic’s **type validation, serialization, and structured output** capabilities in AI applications. Pydantic AI excels in **natural structured output and strong type validation**, is lightweight and easy to use, and integrates well with other frameworks for combined usage.
-
-> _Official Reference_: [PydanticAI Documentation](https://ai.pydantic.dev/), [PydanticAI GitHub](https://github.com/pydantic/pydantic-ai).
-
-## Framework Evaluation
-### Usage Instructions
-#### 📌 Agent
-PydanticAI’s agent module is its core component, designed to provide a structured, type-safe, and highly extensible way to build AI applications interacting with large language models (LLMs).
-
-An agent instance combines the following elements:
-
-+ **System Prompt**: Developer-defined instructions guiding LLM behavior.
-+ **Function Tools**: Functions the LLM can call during response generation to fetch information or perform actions.
-+ **Structured Result Type**: Specifies the structured data type the LLM must return upon completion.
-+ **Dependency Type Constraint**: Dependencies available to system prompt functions, tools, and result validators at runtime.
-+ **LLM Model**: The default LLM model associated with the agent, configurable at runtime.
-+ **Model Settings**: Optional default model settings for fine-tuning requests, also configurable at runtime.
-
-> 💡 In type terminology, an agent is generic in its dependency and result types. For example, an agent requiring `Foobar` dependencies and returning `list[str]` results is typed as `Agent[Foobar, list[str]]`.
-
-PydanticAI offers multiple ways to run agents to accommodate different use cases:
-
-1. **Async Run**: `agent.run()` returns a coroutine, suitable for asynchronous environments.
-2. **Sync Run**: `agent.run_sync()` is a synchronous function for synchronous environments.
-3. **Streaming Run**: `agent.run_stream()` returns an async iterable for streaming responses.
-4. **Iterative Run**: `agent.iter()` returns a context manager, allowing manual control over the agent’s execution process.
-
-#### 📌 Function Tools
-PydanticAI’s function tools mechanism allows agents to call external functions at runtime to fetch additional information or perform specific tasks, enhancing the model’s responsiveness.
-
-**Registration Methods**:
-
-+ Use `@agent.tool` to register tools requiring access to the agent context.
-+ Use `@agent.tool_plain` to register tools that do not need access to the agent context.
-+ Register tool functions or `Tool` instances via the `tools` parameter in the `Agent` constructor.
-
-**Dynamic Function Tools**
-
-PydanticAI supports dynamic function tools, where tool definitions can be modified or included based on runtime context. This is achieved by defining a `prepare` function for the tool, which is called at runtime to customize the tool’s behavior or decide whether to register it.
-
-```python
-# Define prepare function
-async def only_if_42(ctx: RunContext[int], tool_def: ToolDefinition) -> Union[ToolDefinition, None]:
-    if ctx.deps == 42:
-        return tool_def
-
-# Define tool and register prepare function
-@agent.tool(prepare=only_if_42)
-def hitchhiker(ctx: RunContext[int], answer: str) -> str:
-    return f'{ctx.deps} {answer}'
-
-# Run agent
-result = agent.run_sync('testing...', deps=41)
-print(result.data)  # Tool not registered
-result = agent.run_sync('testing...', deps=42)
-print(result.data)  # Tool registered and called
-```
-
-**Relationship Between Tools and Structured Results**
-
-Tool parameters and return values can be defined as Pydantic models, ensuring structured and type-safe data. Additionally, PydanticAI extracts parameter descriptions from function docstrings, automatically generating JSON schemas for tools to enhance the model’s understanding.
-
-#### 📌 Result Validation
-PydanticAI’s result module (`pydantic_ai.result`) provides a structured way to handle outputs from agent execution, ensuring generated responses conform to expected formats and types.
-
-+ **Result Type**: Defines the expected output format, which can be a simple `str` type or a complex Pydantic model.
-+ **Result Wrapper Classes**:
-  + `AgentRunResult`: Wraps results for synchronous runs.
-  + `StreamedRunResult`: Wraps results for streaming runs.
-+ **Structured Responses**: When the result type is a Pydantic model, PydanticAI automatically generates corresponding JSON schemas and validates the model’s output, ensuring type safety and structural consistency.
-
-#### 📌 Dependency Injection
-PydanticAI provides a unique dependency injection system to supply data and services to agent systems, prompts, tools, and result validators, which is particularly useful for testing.
-
-+ **Define Dependencies**: Dependencies can be any Python type, typically encapsulated in dataclasses (`@dataclass`) to bundle multiple dependency objects, such as API keys and HTTP clients.
-
-```python
-from dataclasses import dataclass
-import httpx
-
-@dataclass
-class MyDeps:
-    api_key: str
-    http_client: httpx.AsyncClient
-```
-
-+ **Register Dependency Types**: When creating an agent, specify the dependency dataclass type via the `deps_type` parameter to enable type checking.
-
-```python
-from pydantic_ai import Agent
-
-agent = Agent(
-    model='openai:gpt-4o',
-    deps_type=MyDeps
-)
-```
-
-+ **Access Dependencies**: In system prompt functions, tool functions, and result validators, dependencies are accessed via the `RunContext` type. `RunContext` uses generic parameters to specify dependency types, ensuring type safety.
-
-```python
-from pydantic_ai import RunContext
-
-@agent.system_prompt
-async def get_system_prompt(ctx: RunContext[MyDeps]) -> str:
-    response = await ctx.deps.http_client.get(
-        'https://example.com',
-        headers={'Authorization': f'Bearer {ctx.deps.api_key}'}
-    )
-    return f'Prompt: {response.text}'
-```
-
-> 💡 System prompt functions, function tools, and result validators run in the agent’s asynchronous context. If these functions are not coroutines (e.g., using `async def`), they are executed in a thread pool using `run_in_executor`. For dependencies performing I/O operations, it’s preferable to use `async` methods, although synchronous dependencies work as well.
-
-#### 📌 Type Safety
-Based on the preceding sections, the framework supports type safety through the following methods:
-
-+ Pydantic Models
-+ Static Type Checking
-+ Runtime Validation
-+ Structured Output
-
-It also supports integration with static type checkers like mypy and pyrite, making type checking as straightforward as possible.
-
-### Message History
-#### **Accessing Message History**
-+ `RunResult` and `StreamedRunResult` objects provide the following methods to access messages:
-  + `all_messages()`: Returns all messages for the current run, including system prompts, user inputs, and model responses.
-  + `new_messages()`: Returns only the messages newly generated in the current run.
-  + `all_messages_json()` and `new_messages_json()`: Return JSON byte representations of the above methods, respectively.
-
-> 💡 In **streaming runs** (`run_stream`), the final output message is not immediately included in `all_messages()` until the stream completes, as shown in the example below:
-
-```python
-agent = Agent(model=llm, system_prompt='Be a helpful assistant.')
-
-async def main():
-    async with agent.run_stream('Tell me a joke.') as result:
-        # incomplete messages before the stream finishes
-        # print(result.all_messages())
-        async for text in result.stream_text():
-            print(text)
-            #> Did you hear
-            #> Did you hear about the toothpaste
-            #> Did you hear about the toothpaste scandal? They called
-            #> Did you hear about the toothpaste scandal? They called it Colgate.
-
-        # complete messages once the stream finishes
-        # print(result.all_messages())
-
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
-```
-
-#### **Passing Messages in Multi-Turn Conversations**
-In subsequent agent runs, previous messages can be passed to the `message_history` parameter to maintain conversational context.
-
-```python
-result2 = agent.run_sync('Explain?', message_history=result1.new_messages())
-```
-
-If `message_history` is non-empty, the system prompt will not be regenerated, assuming the existing message history already includes the system prompt.
-
-#### **Storing and Loading Messages**
-Message history can be **serialized** to JSON format and stored in a file for later loading and use:
-
-```python
-import json
-
-def log_messages(messages):
-    serialized = [
-        {
-            "role": m.role if hasattr(m, "role") else "unknown",
-            "content": m.content if hasattr(m, "content") else str(m),
-        }
-        for m in messages
-    ]
-    with open("all_messages.json", "w") as f:
-        json.dump(serialized, f, indent=2)
-```
-
-This approach is suitable for building multi-agent systems or sharing message history in agent graphs.
-
-### Streaming Output
-+ The `run_stream` method enables a streaming session, allowing incremental reception of the model’s output:
-
-```python
-async with agent.run_stream('Tell me a joke.') as result:
-    async for message in result.stream_text(delta=True):
-        print(message)
-```
-
-+ In streaming output, the `stream_text(delta=True)` method allows retrieval of the model’s text responses incrementally, suitable for scenarios requiring real-time display of generated content.
-
-### Persistence
-**Data Persistence Methods**:
-
-+ PydanticAI uses Pydantic models to define structured outputs (e.g., `BaseModel`), which can be persisted at runtime through tools or external services (e.g., databases). For instance, agent run results can be saved to external databases (e.g., PostgreSQL) or file systems.
-+ Through **dependency injection**, developers can inject database connections (e.g., `DatabaseConn`) to write structured data generated by agents (e.g., `SupportOutput`) to a database or query historical data.
-+ Integration with **Pydantic Logfire** enables persistence of logs, traces, and metrics to the Logfire backend, with a 30-day retention period, suitable for debugging and monitoring.
-
-**Runtime Context and Message History**:
-
-+ PydanticAI supports short-term context persistence by passing previous run messages via **Messages and Chat History**, ideal for multi-turn conversation scenarios.
-+ Long-term context persistence requires developers to implement external state management, such as saving agent states or message history using external storage (e.g., PostgreSQL).
-
-### Debugging and Monitoring
-**Pydantic Logfire** is an observability platform developed by the team behind Pydantic and PydanticAI. Logfire is designed to observe entire applications, including generative AI, classical predictive AI, HTTP traffic, database queries, and everything needed for modern applications. PydanticAI has built-in (but optional) support for Logfire. If the `logfire` package is installed, configured, and agent instrumentation is enabled, details about agent runs are sent to Logfire. Otherwise, there is minimal overhead, and no data is sent.
-
-> Logfire is a commercially supported hosted platform with an open-source SDK (MIT license) and offers a free tier to lower the entry barrier.
-
-Official interface example:
-
-![](pictures/logfire-weather-agent.png)
-
-### Graph-Based Async State Machine
-`**pydantic-graph**` is an official standalone library for building graph-based asynchronous state machines. It is independent of `pydantic-ai` and can be used for any workflow requiring graphs or state machines, such as task scheduling, process automation, or event-driven systems. It uses a graph structure (`Graph`) to organize nodes (`Node`) and states (`State`), allowing developers to define and execute multi-step workflows declaratively.
-
-While **graphs** and **state machines** (FSMs) are powerful tools for modeling and controlling complex workflows, they are not suitable for every scenario. The official stance is that if you are not comfortable with Python’s type hints, this graph-based approach may not be ideal, as `pydantic-graph` relies heavily on **type hints** and **generics**, targeting advanced developers with complex business requirements. Before using graphs, consider whether such a complex tool is necessary.
-
-#### 📌 Core Components
-The main components of `pydantic-graph` include:
-
-+ **GraphRunContext**: The runtime context for the graph, similar to PydanticAI’s `RunContext`. It holds the graph’s state and dependencies, passed to nodes during execution.
-+ **BaseNode**: Defines nodes executed within the graph. Nodes typically consist of:
-  - Fields containing required/optional parameters needed to invoke the node.
-  - Business logic executed in the `run` method.
-  - Return type annotations for the `run` method, which `pydantic-graph` uses to determine outgoing edges.
-+ **End**: Represents the end of graph execution, returning the final result.
-+ **Graph**: A graph composed of multiple nodes, managing connections and execution flow. It is generic in three types:
-  - `StateType`
-  - `DepsType`
-  - `ReturnType`
-
-#### 📌 Feature Highlights
-+ **Type Safety**
-  - **Type Hints and Generics Support**: `pydantic-graph` leverages Python’s type hints and generics to ensure type consistency for data passing, state management, and dependency injection between nodes. Each node (inheriting from `BaseNode`) explicitly specifies state type (`StateT`), dependency type (`DepsT`), and return type (`RunEndT`) via generic parameters, catching type errors at compile time.
-  - **Dynamic Edge Type Checking**: Nodes define outgoing edges (to the next node or `End`) via the `run` method’s return type annotations, ensuring the graph’s structure is type-safe. For example, `Union[AnotherNode, End[int]]` allows dynamic path selection while maintaining type constraints.
-+ **Asynchronous Support**
-  - **Fully Asynchronous Node Execution**: All nodes’ `run` methods are asynchronous (`async def`), supporting async operations like network requests, file I/O, or external API calls. This makes `pydantic-graph` ideal for high-concurrency scenarios, such as real-time data processing or LLM interactions.
-  - **Asynchronous Iteration**: The `Graph.iter` method returns a **context manager** that yields a `GraphRun` object, an async iterable of nodes in the graph. This allows logging or modifying nodes as they execute.
-+ **Dependency Injection**
-  - **Type-Safe Dependency Injection**: Via `GraphRunContext.deps` and the generic `DepsT` parameter, external dependencies (e.g., database connections, executors, or configuration objects) can be injected into nodes. Dependencies can be defined using dataclasses or Pydantic models.
-  - **Test-Friendly**: Dependency injection facilitates mocking dependencies for unit and integration testing, such as mock database clients or loggers.
-  - **Cross-Process Support**: Supports injecting resources like `ProcessPoolExecutor` to offload computational tasks to separate processes (e.g., as shown in `deps_example.py`).
-
-```python
-from dataclasses import dataclass
-from concurrent.futures import ProcessPoolExecutor
-import asyncio
-from pydantic_graph import BaseNode, GraphRunContext
-
-@dataclass
-class GraphDeps:
-    executor: ProcessPoolExecutor
-
-@dataclass
-class Increment(BaseNode[None, GraphDeps]):
-    foo: int
-    async def run(self, ctx: GraphRunContext[None, GraphDeps]) -> DivisibleBy5:
-        loop = asyncio.get_running_loop()
-        result = await loop.run_in_executor(ctx.deps.executor, self.compute)
-        return DivisibleBy5(result)
-```
-
-+ **State Graph**
-  - **State Passing and Updates**: The graph’s state (`StateT` type, typically a dataclass or Pydantic model) can be passed and modified between nodes. Each node accesses and updates the state via `GraphRunContext.state`, akin to an artifact built progressively on a production line.
-  - **Flexible State Management**: Supports both stateless graphs (`StateT` defaults to `None`) and stateful graphs, accommodating simple logic to complex multi-step workflows.
-+ **Iterative Graph**
-  - **Asynchronous Iteration (`Graph.iter`)**: The `Graph.iter` method returns an async context manager yielding a `GraphRun` object, allowing developers to iterate over the graph’s execution node by node using `async for`. This is suitable for workflows requiring fine-grained control or real-time monitoring. **Supports logging node states, modifying execution paths, or early termination.**
-
-```python
-async def main():
-    state = CountDownState(counter=3)
-    async with count_down_graph.iter(CountDown(), state=state) as run:
-        async for node in run:
-            print('Node:', node)  # Print each node
-        print('Final result:', run.result.output)  # Print final result
-
-# Node: CountDown()
-# Node: CountDown()
-# Node: CountDown()
-# Node: End(data=0)
-# Final result: 0
-```
-
-+ **State Persistence**
-  - **Interrupt and Resume**: `pydantic-graph` supports interrupting and resuming graph execution through state persistence, **simplifying handling of pauses, user inputs, or long-running workflows**. State persistence snapshots the graph’s state before and after each node’s execution, enabling resumption from any point.
-    - **SimpleStatePersistence**: Stores the latest snapshot in memory, suitable for temporary runs (default implementation).
-    - **FullStatePersistence**: Stores all snapshot history in memory, ideal for debugging or scenarios requiring complete execution records.
-    - **FileStatePersistence**: Saves snapshots as JSON files, suitable for cross-process or persistent storage.
-    - **Custom Persistence**: Developers can implement custom storage (e.g., database persistence) by inheriting from `BaseStatePersistence`.
-
-#### 📌 Simple Example
-```python
-from dataclasses import dataclass
-from pydantic_graph import BaseNode, End, GraphRunContext
-
-@dataclass
-class MyNode(BaseNode[MyState, None, int]):
-    foo: int
-
-    async def run(
-        self,
-        ctx: GraphRunContext[MyState],
-    ) -> AnotherNode | End[int]:
-        if self.foo % 5 == 0:
-            return End(self.foo)
-        else:
-            return AnotherNode()
-
-async def main():
-    graph = Graph(
-        # Create a graph by passing a list of nodes. The order of nodes is not significant but may affect graph visualization.
-        nodes=[MyNode]
-    )
-    state = MyState()
-    # Initialize the state, which is passed to the graph run and modified during execution.
-    await graph.run(MyNode(), state=state)
-    # Run the graph with the initial state. Since the graph can start from any node, the starting node (MyNode() in this case) must be specified. Graph.run returns a GraphRunResult containing the final data and run history.
-```
-
-+ `BaseNode[MachineState]`: Represents a node in the graph, handling `MachineState`-typed states. Each node contains business logic and updates or reads `MachineState` via `ctx` during execution.
-+ `GraphRunContext[MachineState]`: Represents the runtime context, containing the state required for graph execution. It provides nodes with the ability to access and modify the state during execution.
-
-For a more advanced example combining **Graph and Agent**:
-
-```python
-from dataclasses import dataclass
-from pydantic import BaseModel
-from pydantic_graph import BaseNode, End, Graph, GraphRunContext
-from pydantic_ai import Agent, AgentRunResult
-
-# Define the agents
-@dataclass
-class AgentResponse:
-    property: bool
-    field: str
-    response: str
-
-@dataclass
-class AgentDeps:
-    another_property: bool
-
-agent_a = Agent(deps_type=AgentDeps, result_type=AgentResponse, system_prompt=..., tools=[...])
-agent_b = Agent(deps_type=AgentDeps, result_type=AgentResponse, system_prompt=..., tools=[...])
-
-# Graph state
-class GraphState(BaseModel):
-    user_prompt: str
-    message_history: list[ModelMessage]
-    graph_property: bool
-
-# Graph nodes
-class GraphNodeA(BaseNode[GraphState, None, str]):
-    async def run(
-        self, ctx: GraphRunContext[GraphState]
-    ) -> GraphNodeA | GraphNodeB | End[str]:
-        # Extract relevant graph state into agent deps
-        deps = AgentDeps(another_property=not ctx.state.graph_property)
-
-        # Run agent
-        r: AgentRunResult[AgentResponse] = await agent_a.run(
-            user_prompt=ctx.state.user_prompt, message_history=ctx.state.message_history, deps=deps
-        )
-        # Update state
-        ctx.state.message_history = r.new_messages()
-        ctx.state.graph_property = r.data.property
-
-        if r.data.property:
-            return End(r.data.response)
-
-        if r.data.field == "A":
-            return GraphNodeA()
-
-        return GraphNodeB()
-
-class GraphNodeB(BaseNode[ BearsGraphState, None, str]):
-    async def run(
-        self, ctx: GraphRunContext[GraphState]
-    ) -> GraphNodeA | GraphNodeB | End[str]:
-        # Extract relevant graph state into agent deps
-        deps = AgentDeps(another_property=not ctx.state.graph_property)
-
-        # Run agent
-        r: AgentRunResult[AgentResponse] = await agent_b.run(
-            user_prompt=ctx.state.user_prompt, message_history=ctx.state.message_history, deps=deps
-        )
-        # Update state
-        ctx.state.message_history = r.new_messages()
-        ctx.state.graph_property = r.data.property
-
-        if r.data.property:
-            return End(r.data.response)
-
-        if r.data.field == "B":
-            return GraphNodeB()
-
-        return GraphNodeA()
-
-# Define the graph
-graph = Graph(nodes=[GraphNodeA, GraphNodeB])
-state = GraphState(
-    user_prompt="Hello, how are you?",
-    message_history=[],
-    graph_property=False
-)
-
-# Run the graph
-r: GraphRunResult[GraphState, str] = await graph.run(
-    start_node=GraphNodeA(), state=state
-)
-
-# Process the result
-print(r.output)
-```
-
-#### 📌 Framework Limitations
-+ Currently, the framework **does not support parallel node execution**, as noted in [issue #704](https://github.com/pydantic/pydantic-ai/issues/704). Implementing parallelism requires considering **node order dependencies**, i.e., determining when to start a node that depends on the completion of multiple other nodes.
-+ `pydantic-graph` **lacks built-in streaming output support**. Developers must implement streaming logic separately for each node type, agent internal logic, and top-level graph. This leads to:
-  - Code duplication: Repeated implementation of similar streaming logic.
-  - Complexity: Streaming requires deep understanding of the graph structure, node logic, and graph composition.
-  - A simpler API, like `graph.iter`, could enable top-level graph streaming (similar to LangGraph’s `graph.stream`), yielding events or messages incrementally without waiting for the entire graph to complete, as shown below:
-
-```python
-async with graph.iter(start_node=GraphNodeA(), state=state) as graph_run:
-    async for node in graph_run:
-        async with node.stream(graph_run.ctx) as node_stream:
-            async for event in node_stream:
-                yield event
-```
-
-+ `pydantic-graph` currently **lacks built-in support for nested subgraphs (pipelines)**, meaning a `Graph` instance cannot be directly used as a `BaseNode` in another graph. While developers can manually encapsulate subgraph logic within a node to call the subgraph’s execution, this approach requires explicit management of subgraph execution and state passing.
-
----
-
-This completes the translation of the **Pydantic AI** section, covering all provided content and filling in the missing sections while preserving the original structure and details. If you need further assistance, such as translating or creating evaluations for **AutoGen** and **CrewAI**, or if you have additional content to include, please provide the details, and I’ll assist promptly!
-
-# AutoGen
-## Framework Evaluation
-### Usage Instructions
-AutoGen’s core strength lies in its **conversational agent model**, enabling multi-agent collaboration through message passing. Agents can be defined with specific roles, capabilities, and tools, making it easy to build dynamic, interactive systems.
-
-```python
-from autogen import AssistantAgent, UserProxyAgent
-import os
-
-# Define agents
-user_proxy = UserProxyAgent(
-    name='User',
-    human_input_mode='ALWAYS'
-)
-assistant = AssistantAgent(
-    name='Assistant',
-    llm_config={
-        'model': 'gpt-4o-mini',
-        'api_key': os.getenv('OPENAI_API_KEY')
-    }
-)
-
-# Start conversation
-user_proxy.initiate_chat(
-    assistant,
-    message='Write a Python script to fetch weather data.'
-)
-```
-
-### State Management
-AutoGen manages state through:
-
-+ **Message History**: Agents maintain conversational context via message logs, accessible via `chat_history`.
-+ **External Storage**: Developers can save message history to databases or files for persistence.
-+ **Group Chat**: A `GroupChatManager` coordinates multi-agent state in group conversations, ensuring context is shared appropriately.
-
-```python
-from autogen import GroupChat, GroupChatManager
-
-# Define group chat
-group_chat = GroupChat(
-    agents=[user_proxy, assistant],
-    messages=[]
-)
-manager = GroupChatManager(
-    groupchat=group_chat,
-    llm_config=assistant.llm_config
-)
-
-# Start group conversation
-user_proxy.initiate_chat(
-    manager,
-    message='Plan a team project.'
-)
-```
-
-### Granular Control
-AutoGen provides flexible control over agent interactions through:
-
-+ **Message Patterns**: Define custom message routing (e.g., broadcast, direct, topic-based).
-+ **Conditional Logic**: Implement branching in agent logic using Python code.
-+ **Topic Subscription**: Agents can subscribe to specific topics for dynamic, unstructured interactions.
-
-```python
-# Custom agent with conditional logic
-class CustomAgent(AssistantAgent):
-    def process_message(self, message):
-        if 'urgent' in message['content'].lower():
-            return {'content': 'Prioritizing urgent task!'}
-        return super().process_message(message)
-
-# Initialize custom agent
-custom_agent = CustomAgent(
-    name='CustomAgent',
-    llm_config={'model': 'gpt-4o-mini'}
-)
-```
-
-### Asynchronous & Concurrency
-AutoGen supports asynchronous execution via Python’s `asyncio`, enabling concurrent agent interactions and efficient handling of I/O-bound tasks.
-
-```python
-import asyncio
-from autogen import AssistantAgent
-
-async def main():
-    agent = AssistantAgent(
-        name='AsyncAgent',
-        llm_config={'model': 'gpt-4o-mini'}
-    )
-    response = await agent.a_initiate_chat({'message': 'Analyze data.'})
-    print(response.chat_history)
-
-if __name__ == '__main__':
-    asyncio.run(main())
-```
-
-### Distributed Support
-AutoGen supports distributed execution through:
-
-+ **Local Processes**: Run agents in separate processes for parallelism.
-+ **Remote Deployment**: Use RPC or WebSocket for remote agent communication.
-+ **AutoGen Studio**: Provides a UI for managing distributed agents, simplifying deployment and monitoring.
-
-### Streaming Output
-AutoGen supports streaming responses for real-time interactions, allowing users to see partial outputs as they are generated.
-
-```python
-# Stream responses
-for response in assistant.generate_streaming_reply({'message': 'Tell a story.'}):
-    print(response['content'], end='', flush=True)
-```
-
-### Persistence
-AutoGen does not provide a built-in persistence layer. Developers must implement persistence using external databases or file storage, similar to PydanticAI.
-
-Example with JSON file storage:
-
-```python
-import json
-
-# Save chat history
-with open('chat_history.json', 'w') as f:
-    json.dump(agent.chat_history, f)
-```
-
-### Observability
-AutoGen integrates with standard logging frameworks (e.g., Python’s `logging`) and can be extended with observability tools like Prometheus or Grafana for monitoring and visualization.
-
-```python
-import logging
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('AutoGen')
-logger.info('Agent started')
-```
-
-### Learning Curve
-AutoGen’s modular design is accessible, but building multi-agent systems requires understanding conversational patterns, message flows, and agent orchestration. The learning curve is moderate, especially for developers new to multi-agent architectures.
-
-### Community Activity
-AutoGen has a vibrant community with significant GitHub activity (41,610 stars, 571 PR creators). It benefits from comprehensive documentation, active development, and strong support from Microsoft.
-
-### LLM Support
-AutoGen supports a wide range of LLMs, including:
-
-+ OpenAI (e.g., GPT-4o, GPT-3.5)
-+ Azure OpenAI
-+ Hugging Face models
-+ Other API-based providers
-
-It provides flexible configuration for model integration.
-
-### Framework Compatibility
-AutoGen is compatible with:
-
-+ **Python Ecosystem**: Integrates with standard Python libraries and tools.
-+ **.NET**: Supports .NET-based applications for cross-platform development.
-+ **AutoGen Studio**: Provides a visual interface for multi-platform integration and debugging.
-
-### DevOps Deployment
-AutoGen can be deployed as:
-
-+ **Python Services**: Run as standalone scripts or services.
-+ **Docker Containers**: Package with Docker for consistent deployments.
-+ **AutoGen Studio Server**: Host agents via Studio’s server mode for centralized management.
-
----
-
-# CrewAI
-## Framework Evaluation
-### Usage Instructions
-CrewAI organizes agents into **Crews** (teams of agents) and **Flows** (workflows), with a focus on role-based task delegation and process-driven automation.
-
-```python
-from crewai import Agent, Task, Crew
-
-# Define agents
-researcher = Agent(
-    role='Researcher',
-    goal='Find market trends.',
-    llm='gpt-4o-mini'
-)
-writer = Agent(
-    role='Writer',
-    goal='Write a report.',
-    llm='gpt-4o-mini'
-)
-
-# Define tasks
-research_task = Task(
-    description='Research AI market trends.',
-    agent=researcher
-)
-write_task = Task(
-    description='Write a report on findings.',
-    agent=writer
-)
-
-# Create crew
-crew = Crew(
-    agents=[researcher, writer],
-    tasks=[research_task, write_task]
-)
-
-# Execute
-result = crew.kickoff()
-print(result)
-```
-
-### State Management
-CrewAI uses a **Memory module** to manage state and context across tasks and agents.
-
-```python
-from crewai import Memory
-
-# Initialize memory
-memory = Memory()
-
-# Save task context
-memory.save_context(
-    task_id='research_task',
-    data={'trends': 'AI adoption rising'}
-)
-```
-
-### Granular Control
-CrewAI provides granular control through:
-
-+ **Conditional Branching**: Define task dependencies and conditions for execution.
-+ **Task Delegation**: Dynamically assign tasks to agents based on their roles.
-+ **Synchronization**: Coordinate multi-agent tasks using callbacks and event listeners.
-
-```python
-# Conditional task
-write_task = Task(
-    description='Write if research complete.',
-    agent=writer,
-    condition=lambda: memory.get_context('research_task') is not None
-)
-```
-
-### Asynchronous & Concurrency
-CrewAI supports asynchronous task execution and concurrent Flows, leveraging Python’s `asyncio` for efficient resource utilization.
-
-```python
-async def main():
-    result = await crew.kickoff_async()
-    print(result)
-
-if __name__ == '__main__':
-    import asyncio
-    asyncio.run(main())
-```
-
-### Distributed Support
-CrewAI’s enterprise edition supports cluster deployment with load balancing, while the open-source version requires manual scaling (e.g., using Kubernetes or cloud platforms).
-
-### Streaming Output
-CrewAI uses task callbacks to provide indirect streaming support, allowing developers to monitor task progress in real-time.
-
-```python
-# Define callback for task completion
-def on_task_complete(task, result):
-    print(f'Task {task.description} completed: {result}')
-
-write_task.callback = on_task_complete
-```
-
-### Persistence
-CrewAI’s **Memory module** automatically caches task states and supports integration with external databases for persistent storage.
-
-```python
-# Save to database
-memory.save_to_db('postgresql://user:pass@localhost:5432/crewai')
-```
-
-### Observability
-CrewAI provides a control plane for monitoring agent performance, task execution, and resource consumption.
-
-```python
-# Enable monitoring
-crew.enable_monitoring()
-```
-
-### Learning Curve
-CrewAI’s Crew and Flow model is intuitive and aligns with real-world team collaboration concepts. The learning curve is low, especially for developers familiar with role-based workflows.
-
-### Community Activity
-CrewAI has strong community support with significant GitHub activity (29,091 stars, 364 PR creators). It offers rich documentation, tutorials, and enterprise-grade support.
-
-### LLM Support
-CrewAI connects to any API-based LLM, providing flexible integration with providers like OpenAI, Anthropic, and others.
-
-### Framework Compatibility
-CrewAI integrates with Python’s native ecosystem, including:
-
-+ **Logging**: For monitoring and debugging.
-+ **Caching**: For performance optimization.
-+ **Data Platforms**: For integration with databases and storage systems.
-
-### DevOps Deployment
-CrewAI supports:
-
-+ **Scripted Auto-Deployment**: In the open-source version, using Python scripts or Docker.
-+ **Centralized Management**: In the enterprise edition, with cloud deployment and cluster management.
 

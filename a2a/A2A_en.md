@@ -16,7 +16,7 @@ In simple terms, A2A gives AI agents a unified “language” for communication.
 
 ### 1.1 Participants in A2A
 
-![image.png](pictures/img1.png)
+![image.png](pictures/image%201.png)
 
 As illustrated above, the A2A protocol involves three types of participants:
 
@@ -50,7 +50,7 @@ As illustrated above, the A2A protocol involves three types of participants:
 
 ### 1.3 Relationship Between A2A and MCP
 
-![image.png](pictures/img2.png)
+![image.png](pictures/image%202.png)
 
 A2A is often discussed alongside MCP (Model Context Protocol), proposed by Anthropic. In essence, the two serve different but complementary purposes.
 
@@ -186,7 +186,7 @@ The entire interaction uses standard JSON formats and HTTP/SSE channels, enablin
 
 The following describes a typical interaction process in an A2A network, illustrating the full cycle from agent discovery to task completion. This workflow connects the previously described concepts in a practical context:
 
-![A typical communication workflow under the A2A protocol: On the left is the Client Agent (Agent A), and on the right is the Remote Agent (Agent B). First, Agent B exposes its capabilities through a publicly available JSON Agent Card, allowing Agent A to discover and understand its functionality. Agent A then initiates task communication with Agent B through A2A interfaces. The two agents collaborate around a Task, exchanging context, responses, and outputs via Messages. The entire process runs over HTTP/SSE channels, ensuring secure coordination and state management.](pictures/img3.png)
+![A typical communication workflow under the A2A protocol: On the left is the Client Agent (Agent A), and on the right is the Remote Agent (Agent B). First, Agent B exposes its capabilities through a publicly available JSON Agent Card, allowing Agent A to discover and understand its functionality. Agent A then initiates task communication with Agent B through A2A interfaces. The two agents collaborate around a Task, exchanging context, responses, and outputs via Messages. The entire process runs over HTTP/SSE channels, ensuring secure coordination and state management.](pictures/image%203.png)
 
 This diagram shows a typical communication flow under the A2A protocol. On the left is the **Client Agent** (Agent A), and on the right is the **Remote Agent** (Agent B). First, Agent B exposes its capabilities through a publicly accessible JSON Agent Card, allowing Agent A to discover and understand what it can do. Then, Agent A initiates a task via A2A interfaces. The two agents collaborate around a Task, exchanging Messages that carry context, responses, and outputs. The entire process runs over HTTP/SSE channels to ensure secure coordination and state tracking.
 
