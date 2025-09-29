@@ -26,3 +26,7 @@ To maintain the blog posts of Euler AI.
 ### Memory Framework
 
 - [2025/06/03] Open-Source AI Memory Framework Evaluation. [EN](memory_framework/memory_framework_report_en.md) / [Zh-CN](memory_framework/memory_framework_report_cn.md)
+
+### Pathway
+
+- [2025/10/03] Pathway - a New Path for Real-Time Data Processing. [EN](Pathway/Pathway_EN.md) / [Zh-CN](Pathway/Pathway_CN.md)
