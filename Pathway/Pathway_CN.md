@@ -12,7 +12,9 @@ Pathway 的初衷是为了解决现代企业在物联网传感器、供应链系
 
 官方资料显示 Pathway 在流处理和批处理中性能超越了业界常用的 Flink、Spark 等框架。比如在经典的单词计数（WordCount）测试中，Pathway 在不同吞吐量下都展示出更低的处理延迟（如下图所示），体现出卓尔不群的性能优势：
 
-![[Pasted image 20250927140159.png]] _Pathway 在 WordCount 基准测试中的处理延迟相较于 Apache Flink、Apache Spark 和 Kafka Streams 更低（纵轴为延迟，越低越好）
+![Pathway WordCount 基准测试延迟比较](./img_v3_02qj_714f7706-7cd7-4437-b797-1fe86bdb2eag.png)
+
+*Pathway 在 WordCount 基准测试中的处理延迟相较于 Apache Flink、Apache Spark 和 Kafka Streams 更低（纵轴为延迟，越低越好）*
 
 从诞生以来，Pathway 就瞄准了一些传统流处理框架难以涉足的复杂场景。比如，Pathway 能在流模式下执行**迭代算法**（如动态 PageRank 图算法）或机器学习模型更新，这些在 Flink 等框架上往往难以实现或者不支持，而在 Pathway 中却是跟处理简单聚合差不多的常规操作。
 

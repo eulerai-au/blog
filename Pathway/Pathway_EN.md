@@ -15,7 +15,9 @@ More importantly, Pathway has a powerful built-in **incremental computation engi
 
 Studies show that Pathway's performance in both stream and batch processing surpasses industry-standard frameworks like Flink and Spark. For example, in the classic WordCount benchmark, Pathway demonstrates lower processing latency across different throughput levels (as shown in the figure below), showcasing outstanding performance advantages:
 
-![[Pasted image 20250927140159.png]] _Pathway's processing latency in the WordCount benchmark compared to Apache Flink, Apache Spark, and Kafka Streams is lower (vertical axis represents latency, lower is better)_
+![Pathway WordCount benchmark latency comparison](./img_v3_02qj_714f7706-7cd7-4437-b797-1fe86bdb2eag.png)
+
+*Pathway's processing latency in the WordCount benchmark compared to Apache Flink, Apache Spark, and Kafka Streams is lower (vertical axis represents latency, lower is better)*
 
 Since its inception, Pathway has targeted complex scenarios that are difficult for traditional stream processing frameworks to handle. For instance, Pathway can execute **iterative algorithms** (like dynamic PageRank graph algorithms) or update machine learning models in streaming mode – these are often challenging or unsupported in frameworks like Flink, but in Pathway, they are as routine as handling simple aggregations.
 
