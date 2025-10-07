@@ -69,18 +69,23 @@ Thanks to Natural Language Processing (NLP), modern BI systems now let users sim
 You might type:  
 > “Show me last quarter’s sales trend in South China.”  
 
+![Architecture of User Natural Language Query Generation in SiriusBI](./pictures/pic1.PNG)
+
 The system interprets your intent, generates the query, and visualises the results instantly.  
 
 Leading platforms like **Microsoft Power BI with Copilot**, **Tencent SiriusBI**, and **Salesforce Einstein Analytics** already support multi-turn conversations — allowing managers to ask follow-up questions and explore data interactively.  
 
 With AI, BI evolves from a **query tool** into a **business partner** — one that enables everyone, not just analysts, to interact intelligently with data.
 
+![In Salesforce, users can directly query sales data using natural language](./pictures/pic2.PNG)
 ---
 
 ## **Case 2: Intelligent Governance — Turning Data into Actionable Value**
 
 BI’s mission has always been to make organisations data-driven.  
 But in industries like manufacturing, fragmented systems and inconsistent data often stand in the way.  
+
+![Uptake and UnitedRoad collaborate to reduce fleet operating costs and extend equipment lifespan.](./pictures/pic3.PNG)
 
 **Uptake**, an industrial AI company, shows what’s possible when data is truly connected.  
 By merging real-time sensor data with historical machine data from vehicles, turbines, and mining equipment, Uptake’s AI platform detects anomalies and predicts failures before they occur.  
