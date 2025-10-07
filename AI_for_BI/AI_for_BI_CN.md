@@ -40,11 +40,11 @@ Business Intelligence，商业智能这个术语最早出现在 1865 年，不�
 
 你只需输入一句话：“帮我看一下上季度华南区的销售趋势”，系统会理解你的意图，生成查询语句并调用数据库，绘制出趋势。帮助你看到现在的业务具体是什么样子。
 
-![](https://ccnhp7l1u69u.feishu.cn/space/api/box/stream/download/asynccode/?code=MDVkZTM4YjRmNjY2NGE2Nzk3MDY0ODNlZjE5ZjA4NDJfUzZ5UnNVY3NicW9jNjA5QXlXUlpCTndveXJ1ZFVpQzFfVG9rZW46TkRPTGJaNFk3b2hibFd4eVdtNmNoSlpybmFlXzE3NTk3OTMzODM6MTc1OTc5Njk4M19WNA)
+![SiriusBI 中用户自然语言查询生成的架构](./pictures/pic1.PNG)
 
 更强大的是，这些系统还能进行多轮对话式分析。诸如微软的 Power BI + Copilot、腾讯的 SiriusBI、Salesforce Einstein Analytics 等现代化平台。管理者可以连续提问，在现有数据报表的基础上询问更加细节的信息，系统会自动保持上下文，补充数据维度和过滤条件。
 
-![](https://ccnhp7l1u69u.feishu.cn/space/api/box/stream/download/asynccode/?code=MDc0N2E3NTViM2RmNmY0OWFkMmM2Mzc2Y2RkZjU5N2ZfbjdYbHlnTU83QTJMMHRpVWl3UVhMU01rWDNablpBc2xfVG9rZW46SllpN2JteEx3b215cmZ4aU9qcWNBbmkwblpjXzE3NTk3OTMzODM6MTc1OTc5Njk4M19WNA)
+![在Salesforce中，用户可以使用自然语言直接查询销售数据](./pictures/pic2.PNG)
 
 在 NLP 技术的加持下，这种对话分析正帮助 BI 从查询工具变成业务伙伴，这意味着业务人员无需 SQL，不用懂数据建模，也能直接向系统提问并获取数据洞见。
 
@@ -52,7 +52,7 @@ Business Intelligence，商业智能这个术语最早出现在 1865 年，不�
 
 BI 最早的使命就是“让企业基于数据做决策”，它承担了从数据采集、存储、清洗、建模到分析可视化的全过程。在实际应用中，尤其是工业领域，散落在系统中的数据往往让数据驱动成为了一句口号。来自不同厂牌，不同接口，不同精度的传感器，记录着温度、震动、电流等上百个指标，孤立的存放在各个子系统中。往往只有在设备故障后，才会被调取分析。
 
-![](https://ccnhp7l1u69u.feishu.cn/space/api/box/stream/download/asynccode/?code=OTg3ODM5MTc4OTgwOTZmNGE0YzAyNjM1NDhhYWFhYmZfWk5keWpkT2xTVnpOSTlWNVU2blRkRE9XZVRKMTR3c3BfVG9rZW46TURuZmJEU1Qxb2NHMTN4OGI0Z2NrZklCbkxjXzE3NTk3OTMzODM6MTc1OTc5Njk4M19WNA)
+![Uptake 与 UnitedRoad 合作，降低车队运营成本并延长设备使用时间。](./pictures/pic3.PNG)
 
 工业智能公司 Uptake 提供了一个令人信服的范例。 为了实现真正的“数据驱动维护”，Uptake 将历史工况数据与设备的实时传感器数据相结合，通过网络与卫星通信，将遍布各地的车队、风力发电机组、矿山机械的运行数据汇聚到一个集中的分析平台。 在这一平台中，AI 模型会自动识别异常模式并生成预测性见解。例如：
 
