@@ -30,3 +30,7 @@ To maintain the blog posts of Euler AI.
 ### Pathway
 
 - [2025/10/03] Pathway - a New Path for Real-Time Data Processing. [EN](Pathway/Pathway_EN.md) / [Zh-CN](Pathway/Pathway_CN.md)
+
+### Text2speech
+
+- [2025/10/03] AI Text-to-Speech: Who’s the Real “Voice Magician”? [EN](text2voice/20251013公众号EN.md) / [Zh-CN](text2voice/20251013公众号.md)
