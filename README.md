@@ -34,3 +34,7 @@ To maintain the blog posts of Euler AI.
 ### Text2speech
 
 - [2025/10/03] AI Text-to-Speech: Who’s the Real “Voice Magician”? [EN](text2voice/20251013公众号EN.md) / [Zh-CN](text2voice/20251013公众号.md)
+
+### PageIndex
+
+- [2025/11/18] PageIndex: The Next Generation of Vector-Free, Reasoning-Based RAG, Letting Models "Think Before They Search". [EN](PageIndex/PageIndex_en.md) / [Zh-CN](PageIndex/PageIndex_cn.md)
