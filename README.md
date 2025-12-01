@@ -38,3 +38,7 @@ To maintain the blog posts of Euler AI.
 ### PageIndex
 
 - [2025/11/18] PageIndex: The Next Generation of Vector-Free, Reasoning-Based RAG, Letting Models "Think Before They Search". [EN](PageIndex/PageIndex_en.md) / [Zh-CN](PageIndex/PageIndex_cn.md)
+
+### PageIndex
+
+- [2025/12/01] Gemini 3: The Dawn of a New Intelligent Era – Ultimate Guide to Its Reasoning, Multimodality, and Agent Platform. [EN](Gemini_3/Gemini3_en.md) / [Zh-CN](Gemini_3/Gemini3_cn.md)
