@@ -1,6 +1,7 @@
 # Gemini 3: The Dawn of a New Intelligent Era – Ultimate Guide to Its Reasoning, Multimodality, and Agent Platform
 
 ![image.png](pictures/image.png)
+<sub>Image Source: Generated using Gemini 3 Pro ([1])</sub>
 
 On November 18, Alphabet's Google officially launched the Gemini 3 model series. Sundar Pichai, CEO of Alphabet and Google, stated that since the Gemini era began nearly two years ago, adoption by users and developers has reached unprecedented levels. AI Overviews has 2 billion monthly active users, the Gemini App exceeds 650 million MAUs, over 70% of Cloud customers use AI, and 13 million developers are building apps based on generative models. Gemini 3 integrates all previous capabilities—from reading text and images to understanding scene context—and is now deployed across Search AI mode, Gemini App, AI Studio, Vertex AI, and Google Antigravity.
 
@@ -9,6 +10,7 @@ On November 18, Alphabet's Google officially launched the Gemini 3 model series.
 Gemini 3 is Google's next-generation flagship model, positioned as the "smartest" and "most powerful unified multimodal and agent" model. In nearly all mainstream AI benchmarks, the newly released Gemini 3 Pro significantly outperforms the previous 2.5 Pro:
 
 ![image1.png](pictures/image1.png)
+<sub>Image Source: [2]</sub>
 
 * **LMArena**: Elo **1501**, top of the leaderboard.
 * **Humanity’s Last Exam** (no tools): **37.5%**
@@ -25,6 +27,7 @@ These results indicate that Gemini 3 Pro is more reliable on complex topics such
 Gemini 3 Deep Think is an enhanced reasoning mode that achieves further breakthroughs in complex logic and multimodal understanding:
 
 ![image6.png](pictures/image6.png)
+<sub>Image Source: [2]</sub>
 
 * **Humanity’s Last Exam (no tools)**: **41.0%**
 * **GPQA Diamond**: **93.8%**
@@ -39,18 +42,22 @@ Gemini 3 combines advanced reasoning, visual and spatial comprehension, industry
 * **Digitizing Family Recipes**: Recognize/translate handwritten recipes and generate shareable family cookbooks.
 
   ![image2.png](pictures/image2.png)
+  <sub>Image Source: [2]</sub>
 
 * **Exploring New Deep Learning Fields**: Input papers or long-form video courses to automatically generate interactive flashcards and visualized code.
 
   ![image3.png](pictures/image3.png)
+  <sub>Image Source: [2]</sub>
 
 * **Sports Analysis**: Analyze users’ Pickleball match videos, identify motion issues, and provide training plans.
 
   ![image4.png](pictures/image4.png)
+  <sub>Image Source: [2]</sub>
 
 * **Search Reimagined**: Search AI mode introduces generative UI with immersive visualizations, interactive tools, and simulations.
 
   ![image5.png](pictures/image5.png)
+  <sub>Image Source: [2]</sub>
 
 ### 2) Build: Create Any Project
 
@@ -84,3 +91,9 @@ Gemini 3 is not just a more powerful "Q&A model"—it’s a step toward an AI th
 * **Creators/Designers**: Use multimodality and long context for stylized visualizations, storyboards, and interactive prototypes.
 * **Developers**: Engage in vibe coding in AI Studio/Antigravity with agents for end-to-end prototyping; deploy production-grade models with Vertex AI.
 * **Professionals/Business Ops**: Delegate multi-step processes (e.g., inbox cleanup, service bookings, document organization) to intelligent agents—users just need to define goals and review results.
+
+## References
+
+[1] https://gemini.google.com/app?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=
+
+[2] https://blog.google/products/gemini/gemini-3/?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=#gemini-3-deep-think

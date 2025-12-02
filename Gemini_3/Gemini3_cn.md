@@ -1,6 +1,7 @@
 # Gemini 3：智能新时代开启最，强推理、多模态与智能体平台全解读
 
 ![image.png](pictures/image.png)
+<sub>图片来源：使用 Gemini 3 Pro 生成 ([1])</sub>
 
 11 月 18 日，Alphabet 旗下的谷歌正式推出 Gemini 3 系列模型。Alphabet 兼谷歌 CEO Sundar Pichai 表示：Gemini 时代开启近两年，用户与开发者采用度空前。AI Overviews 月活用户达 20 亿，Gemini App 月活 6.5 亿+，超过 70% 的 Cloud 客户在用 AI，1300 万开发者基于生成式模型构建应用。而 Gemini 3 将会把各代能力融为一体，从读取文本图像，到能读懂场景氛围，并在搜索 AI 模式、Gemini App、AI Studio、Vertex AI 与 Google Antigravity 同步落地。
 
@@ -9,6 +10,7 @@
 Gemini 3 是 Google 的新一代旗舰模型，定位为“最智能”与“最强多模态与智能体”的统一体。在几乎所有主流的 AI 基准测试中，新发布的 Gemini 3 Pro 都显著优于之前的 2.5 Pro：
 
 ![image1.png](pictures/image1.png)
+<sub>图片来源：[2]</sub>
 
 - **LMArena**：Elo **1501**，登顶榜单。
 - **Humanity’s Last Exam**（无工具）：**37.5%**。
@@ -25,6 +27,7 @@ Gemini 3 是 Google 的新一代旗舰模型，定位为“最智能”与“最
 Gemini 3 Deep Think 是 Gemini 3 的增强推理模式，在复杂逻辑、多模态理解等方面取得了进一步突破：
 
 ![image6.png](pictures/image6.png)
+<sub>图片来源：[2]</sub>
 
 - **Humanity’s Last Exam（无工具）**：**41.0%**
 - **GPQA Diamond**：**93.8%**
@@ -39,18 +42,22 @@ Gemini 3 结合了其先进的推理、视觉和空间理解能力、领先的�
 - **家庭菜谱数字化**：识别/翻译手写菜谱，生成可分享的家庭食谱。
     
     ![image2.png](pictures/image2.png)
+    <sub>图片来源：[2]</sub>
     
 - **深度学习新领域**：输入论文、长视频课程，自动生成交互式记忆卡与可视化代码。
     
     ![image3.png](pictures/image3.png)
+    <sub>图片来源：[2]</sub>
     
 - **运动分析**：解析用户的 Pickleball 比赛视频，定位动作问题并输出训练方案。
     
     ![image4.png](pictures/image4.png)
+    <sub>图片来源：[2]</sub>
     
 - **搜索新体验**：搜索 AI 模式引入生成式 UI，按需生成沉浸式可视化、交互工具/模拟。
     
     ![image5.png](pictures/image5.png)
+    <sub>图片来源：[2]</sub>
     
 
 ### 2）Build：构建任何项目
@@ -85,3 +92,9 @@ Gemini 3 不只是更强大的“问答模型”，而是迈向“可感知、�
 - **创作者/设计师**：可以用多模态与长上下文做风格化可视化、脚本/分镜与交互原型。
 - **开发者**：可以在 AI Studio/Antigravity 里 vibe coding，用智能体完成端到端原型；在 Vertex AI 做生产级部署。
 - **职场/业务运营**：可以交给智能体处理多步骤流程（如邮箱整理、服务预订、资料归档），用户只需设定目标与审阅结果。
+
+## 参考内容
+
+[1] https://gemini.google.com/app?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=
+
+[2] https://blog.google/products/gemini/gemini-3/?utm_source=deepmind.google&utm_medium=referral&utm_campaign=gdm&utm_content=#gemini-3-deep-think
