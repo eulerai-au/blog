@@ -69,8 +69,8 @@ Nano Banana 的案例向所有 AI 开发者和企业证明了一个道理：
 行为（Action）
 - “brewing coffee / reading / casting a spell / running mid-stride”
 <div style="display: flex; gap: 10px;">
-    <img src="pictures/bdff88d6-72ba-40c5-9697-5d2592b66ed3.png" alt="">
-    <img src="pictures/57cb3ddb-9078-467a-97d7-290659e93d5d.png" alt="">
+    <img src="pictures/bdff88d6-72ba-40c5-9697-5d2592b66ed3.png" alt="来源：Gemini 生成">
+    <img src="pictures/57cb3ddb-9078-467a-97d7-290659e93d5d.png" alt="来源：Gemini 生成">
 </div>
 
 ### 场景（Location）
