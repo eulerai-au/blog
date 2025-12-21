@@ -72,9 +72,11 @@ The more specific the subject description, the closer the result to the image in
 ### Composition
 
 Just like real photography, Nano banana has excellent understanding of photographic composition. Be sure to use it in your prompts:
+
 - "wide shot / extreme close-up / low-angle / portrait / symmetrical composition"
 
 ### Action
+
 - "brewing coffee / reading / casting a spell / running mid-stride"
 
 <div style="display: flex; gap: 10px;">
@@ -85,12 +87,14 @@ Just like real photography, Nano banana has excellent understanding of photograp
 ### Location
 
 Let the model more accurately understand the physical environment.
+
 - "in a futuristic Mars café with red dust outside"
 - "in a cluttered alchemist's library"
 
 ### Style
 
 The more specific the style, the more stable the result.
+
 - "1990s product photography"
 - "photorealistic"
 - "watercolor illustration"
@@ -101,6 +105,7 @@ The more specific the style, the more stable the result.
 ### Technical Controls
 
 For different styles of images, such as realistic styles, stylized illustrations, or commercial photography, you can use different prompt styles in corresponding scenarios. Based on the model's understanding of photography and technical terminology, it can fully accomplish this, for example:
+
 - Realistic scenes: The scene is illuminated by [lighting description], creating a [mood] atmosphere. Captured with a [camera/lens details], emphasizing [key textures and details]. The image should be in a [aspect ratio] format.
 - Stylized illustrations and stickers: The design should have [line style] and [shading style]. The background must be transparent.
 
